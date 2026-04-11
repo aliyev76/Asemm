@@ -1,0 +1,56 @@
+.kantin-container h3 {
+  margin-bottom: 2rem;
+  color: var(--text-main);
+}
+
+.kantin-form form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.input-group label {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.input-group input {
+  padding: 0.8rem;
+  background: rgba(0,0,0,0.2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: white;
+  outline: none;
+}
+
+.input-group input:focus {
+  border-color: var(--primary);
+}
+
+.p-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.p-table th {
+  text-align: left;
+  padding: 1rem;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+}
+
+.p-table td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.del-btn {
+  background: transparent;
+  padding: 0.5rem;
+}

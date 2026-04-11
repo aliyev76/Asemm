@@ -1,0 +1,39 @@
+.content-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 3rem;
+}
+
+.content-header h1 {
+  font-weight: 900;
+  letter-spacing: -1px;
+  font-size: 2rem;
+  color: var(--text-main);
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: var(--card-bg);
+  padding: 0.5rem 1rem;
+  border-radius: 30px;
+  border: 1px solid var(--border);
+}
+
+.user-profile span {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.avatar {
+  background: var(--primary);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 800;
+}

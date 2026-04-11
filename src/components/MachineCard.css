@@ -1,0 +1,211 @@
+.modal-content-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.modal-header-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.modal-title {
+  font-size: 2rem;
+  font-weight: 900;
+}
+
+.type-badge {
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.type-badge.vip { background: var(--secondary); color: white; }
+.type-badge.regular { background: var(--primary); color: var(--bg-color); }
+
+.large-timer {
+  font-family: 'Monaco', monospace;
+  font-size: 4.5rem;
+  font-weight: 900;
+  text-align: center;
+  color: var(--text-main);
+  text-shadow: 0 0 20px rgba(34, 211, 238, 0.3);
+  background: rgba(255,255,255,0.03);
+  padding: 1.5rem;
+  border-radius: 20px;
+}
+
+.modal-body-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.modal-section h3 {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  letter-spacing: 1px;
+}
+
+.controller-selector {
+  display: flex;
+  gap: 1rem;
+}
+
+.c-btn {
+  flex: 1;
+  padding: 1rem;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  font-size: 1.2rem;
+}
+
+.c-btn.selected {
+  background: var(--primary);
+  color: var(--bg-color);
+  border-color: var(--primary);
+  box-shadow: 0 0 15px rgba(34, 211, 238, 0.4);
+}
+
+.billing-details {
+  background: rgba(0,0,0,0.2);
+  padding: 1.2rem;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1rem;
+}
+
+.divider { border-bottom: 1px solid var(--border); margin: 0.5rem 0; }
+
+.row.total {
+  font-weight: 900;
+  font-size: 1.4rem;
+  color: var(--accent);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.add-btn-main {
+  background: transparent;
+  color: var(--primary);
+  font-size: 0.9rem;
+}
+
+.p-list-mini {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.p-tag {
+  background: var(--border);
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
+
+.empty-msg {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+.modal-actions {
+  margin-top: 1rem;
+}
+
+.action-btn {
+  width: 100%;
+  padding: 1.2rem;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.start-session { background: var(--primary); color: var(--bg-color); }
+.end-session { background: var(--danger); color: white; }
+
+.p-selector-pop {
+   position: absolute;
+   background: var(--card-bg);
+   border: 1px solid var(--border);
+   border-radius: 12px;
+   padding: 1rem;
+   display: grid;
+   grid-template-columns: 1fr 1fr;
+   gap: 0.5rem;
+   z-index: 50;
+   box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+   max-width: 300px;
+}
+
+.p-option {
+  padding: 0.6rem;
+  font-size: 0.8rem;
+  background: var(--sidebar-bg);
+}
+
+/* Eklenen ödeme kutusu stilleri */
+.payment-selection-box {
+  background: rgba(34, 211, 238, 0.05);
+  border: 1px solid var(--primary);
+  padding: 1.5rem;
+  border-radius: 12px;
+  text-align: center;
+  animation: bounceIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.payment-selection-box p {
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.pay-btns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.pay-btn {
+  padding: 1rem;
+  font-size: 1rem;
+}
+
+.pay-btn.nakit { background: #fbbf24; color: black; }
+.pay-btn.iban { background: #8b5cf6; color: white; }
+.pay-btn.cancel {
+  grid-column: span 2;
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+
+.price-info {
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+@keyframes bounceIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
