@@ -21,7 +21,7 @@
 }
 
 .simple-card.active {
-  border-left: 4px solid var(--primary);
+  border-left: 4px solid var(--danger);
 }
 
 .card-top {
@@ -43,8 +43,8 @@
 }
 
 .status-dot.active {
-  background: var(--success);
-  box-shadow: 0 0 10px var(--success);
+  background: var(--danger);
+  box-shadow: 0 0 10px var(--danger);
 }
 
 .card-bottom {
@@ -56,7 +56,7 @@
 }
 
 .active-timer {
-  color: var(--primary);
+  color: var(--danger);
   animation: pulse 2s infinite;
 }
 
@@ -64,4 +64,83 @@
   0% { opacity: 1; }
   50% { opacity: 0.5; }
   100% { opacity: 1; }
+}
+
+.dashboard-content-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.game-filters {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  background: var(--card-bg);
+  padding: 1rem 1.5rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+.filter-label {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  font-weight: 700;
+  min-width: 120px;
+}
+
+.chips-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+
+.game-chip {
+  padding: 8px 16px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: 20px;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+}
+
+.game-chip:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.game-chip.active {
+  background: var(--primary);
+  color: var(--bg-color);
+  border-color: var(--primary);
+  font-weight: 700;
+}
+
+.game-chip.status-active.active {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: white;
+}
+
+.game-chip.status-idle.active {
+  background: var(--success);
+  border-color: var(--success);
+  color: white;
+}
+
+.card-games {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 0.25rem;
+}
+
+.game-tag {
+  font-size: 0.65rem;
+  background: rgba(255,255,255,0.05);
+  padding: 3px 6px;
+  border-radius: 4px;
+  color: var(--text-muted);
 }

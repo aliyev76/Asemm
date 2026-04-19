@@ -51,6 +51,12 @@ const Settings = ({ prices, setPrices }) => {
             </div>
           </div>
         </div>
+        
+        <div className="settings-footer">
+           <button className="main-btn save-all-btn" onClick={() => alert("Fiyat tarifeleri başarıyla güncellendi! 💰")}>
+              💾 FİYATLARI KAYDET
+           </button>
+        </div>
       </div>
     </div>
   );
