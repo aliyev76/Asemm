@@ -68,7 +68,6 @@ const sortGames = (a, b) => {
   const weightA = getWeight(a);
   const weightB = getWeight(b);
   if (weightA !== weightB) return weightA - weightB;
-  return a.localeCompare(b, undefined, { numeric: true }); // e.g. PES 15 before PES 18
 };
 
 const Dashboard = ({ activeTab }) => {
@@ -92,36 +91,46 @@ const Dashboard = ({ activeTab }) => {
     }
   };
 
-  const [tables, setTables] = useState(() => getSaved('asemm_tables', INITIAL_TABLES));
-  const [vips, setVips] = useState(() => getSaved('asemm_vips', INITIAL_VIP));
-  const [prices, setPrices] = useState(() => getSaved('asemm_prices', INITIAL_PRICES));
-  const [logs, setLogs] = useState(() => getSaved('asemm_logs', []));
-  const [history, setHistory] = useState(() => getSaved('asemm_history', []));
-  const [products, setProducts] = useState(() => getSaved('asemm_products', [
+  const [tables, setTables] = React.useState(() => getSaved('asemm_tables', INITIAL_TABLES));
+  const [vips, setVips] = React.useState(() => getSaved('asemm_vips', INITIAL_VIP));
+  const [prices, setPrices] = React.useState(() => getSaved('asemm_prices', INITIAL_PRICES));
+  const [logs, setLogs] = React.useState(() => getSaved('asemm_logs', []));
+  const [history, setHistory] = React.useState(() => getSaved('asemm_history', []));
+  const [products, setProducts] = React.useState(() => getSaved('asemm_products', [
     { id: 1, name: 'Kola', price: 30, stock: 50 },
     { id: 2, name: 'Tost', price: 60, stock: 20 },
     { id: 3, name: 'Su', price: 10, stock: 100 },
   ]));
 
-  const [selectedTableInfo, setSelectedTableInfo] = useState(null); 
-  const [selectedGame, setSelectedGame] = useState(null); 
-  const [selectedStatus, setSelectedStatus] = useState(null); 
+  const [selectedTableInfo, setSelectedTableInfo] = React.useState(null); 
+  const [selectedGame, setSelectedGame] = React.useState(null); 
+  const [selectedStatus, setSelectedStatus] = React.useState(null); 
 
   const t = translations.tr.dashboard; // Şimdilik varsayılan Türkçe
 
-  // Debug: İlk açılışta localStorage durumunu kontrol et
-  useEffect(() => {
-    const rawProd = localStorage.getItem('asemm_products');
-    if (rawProd) {
+  // EMERGENCY RESCUE: Tüm localStorage'ı tara ve kaybolan verileri bulmaya çalış
+  React.useEffect(() => {
+    console.log("--- [RESCUE MODE] Scanning LocalStorage for lost data ---");
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      const val = localStorage.getItem(key);
       try {
-        const parsed = JSON.parse(rawProd);
-        console.log(`[Persist] LocalStorage products found: ${parsed.length} items.`);
+        const parsed = JSON.parse(val);
+        if (Array.isArray(parsed)) {
+          // Eğer içinde ürünlere benzeyen bir şeyler varsa logla
+          const looksLikeProducts = parsed.some(item => item && (item.name === 'Kola' || (item.price && item.name)));
+          if (looksLikeProducts) {
+            console.log(`[RESCUE] Potential Product List Found at key: "${key}" (${parsed.length} items)`);
+            console.log(JSON.stringify(parsed)); // Kullanıcı bunu kopyalayabilir
+          }
+        }
       } catch(e) {}
     }
+    console.log("--- [RESCUE MODE] Scan Complete ---");
   }, []);
 
   // Auto-Save Effect & One-time Migration Fix
-  useEffect(() => {
+  React.useEffect(() => {
     // Veri Tutarlılığı Kontrolü (Masa 6 / Loca Swap Fix if needed)
     const fixMasa6 = (items) => items.map(t => {
       // Type 'regular' -> 'standart' migration
@@ -158,17 +167,20 @@ const Dashboard = ({ activeTab }) => {
     localStorage.setItem('asemm_history', JSON.stringify(history));
 
     // SAFE SAVE for products: Eğer elimizdeki liste varsayılan listeyse (3 öğe) 
-    // ama localStorage daha fazlasını içeriyorsa, üzerine yazma! (Muhtemelen bir yükleme hatası oldu)
+    // veya içindeki veri azsa, asla localStorage üzerine yazma!
     const existingRaw = localStorage.getItem('asemm_products');
     let shouldSaveProducts = true;
-    if (existingRaw && products.length === 3) {
-       try {
-         const existingParsed = JSON.parse(existingRaw);
-         if (existingParsed.length > 3) {
-            console.warn("[Persist] Safe-Save triggered: Preventing overwrite of larger product list with default items.");
-            shouldSaveProducts = false;
-         }
-       } catch(e) {}
+    if (products.length <= 3) {
+       // Mevcut hafızada daha fazlası varsa sakın dokunma!
+       if (existingRaw) {
+          try {
+            const ep = JSON.parse(existingRaw);
+            if (ep.length > products.length) {
+               console.warn("[SafeSave] Data preserved: Avoiding overwrite with smaller list.");
+               shouldSaveProducts = false;
+            }
+          } catch(e) {}
+       }
     }
 
     if (shouldSaveProducts) {
