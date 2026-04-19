@@ -78,8 +78,8 @@ const Dashboard = ({ activeTab }) => {
     if (!saved) return fallback;
     try {
       const parsed = JSON.parse(saved);
-      // Date nesnelerini geri yükle (startTime varsa)
-      if (Array.isArray(parsed)) {
+      // Sadece masalar ve vips için Date dönüşümü yap (startTime varsa)
+      if (Array.isArray(parsed) && (key === 'asemm_tables' || key === 'asemm_vips')) {
         return parsed.map(item => ({
           ...item,
           startTime: item.startTime ? new Date(item.startTime) : null
@@ -87,6 +87,7 @@ const Dashboard = ({ activeTab }) => {
       }
       return parsed;
     } catch (e) {
+      console.error(`Error loading state for ${key}:`, e);
       return fallback;
     }
   };
@@ -107,6 +108,17 @@ const Dashboard = ({ activeTab }) => {
   const [selectedStatus, setSelectedStatus] = useState(null); 
 
   const t = translations.tr.dashboard; // Şimdilik varsayılan Türkçe
+
+  // Debug: İlk açılışta localStorage durumunu kontrol et
+  useEffect(() => {
+    const rawProd = localStorage.getItem('asemm_products');
+    if (rawProd) {
+      try {
+        const parsed = JSON.parse(rawProd);
+        console.log(`[Persist] LocalStorage products found: ${parsed.length} items.`);
+      } catch(e) {}
+    }
+  }, []);
 
   // Auto-Save Effect & One-time Migration Fix
   useEffect(() => {
@@ -144,7 +156,24 @@ const Dashboard = ({ activeTab }) => {
     localStorage.setItem('asemm_prices', JSON.stringify(prices));
     localStorage.setItem('asemm_logs', JSON.stringify(logs));
     localStorage.setItem('asemm_history', JSON.stringify(history));
-    localStorage.setItem('asemm_products', JSON.stringify(products));
+
+    // SAFE SAVE for products: Eğer elimizdeki liste varsayılan listeyse (3 öğe) 
+    // ama localStorage daha fazlasını içeriyorsa, üzerine yazma! (Muhtemelen bir yükleme hatası oldu)
+    const existingRaw = localStorage.getItem('asemm_products');
+    let shouldSaveProducts = true;
+    if (existingRaw && products.length === 3) {
+       try {
+         const existingParsed = JSON.parse(existingRaw);
+         if (existingParsed.length > 3) {
+            console.warn("[Persist] Safe-Save triggered: Preventing overwrite of larger product list with default items.");
+            shouldSaveProducts = false;
+         }
+       } catch(e) {}
+    }
+
+    if (shouldSaveProducts) {
+      localStorage.setItem('asemm_products', JSON.stringify(products));
+    }
   }, [tables, vips, prices, logs, history, products]);
 
   const allGames = useMemo(() => {
