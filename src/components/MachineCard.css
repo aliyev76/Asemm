@@ -148,21 +148,40 @@
 .end-session { background: var(--danger); color: white; border: none; }
 
 .p-selector-pop {
-   position: absolute;
-   background: var(--card-bg);
-   border: 1px solid var(--border);
-   border-radius: 12px;
-   padding: 1.2rem;
-   display: flex;
-   flex-direction: column;
-   gap: 1.5rem;
-   z-index: 1000;
-   box-shadow: 0 10px 60px rgba(0,0,0,0.8);
-   max-width: 400px;
-   max-height: 500px;
-   overflow-y: auto;
-   right: 0;
-   top: 110%;
+    position: absolute;
+    background: #1e293b;
+    border: 1px solid var(--primary);
+    border-radius: 16px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    z-index: 2000;
+    box-shadow: 0 20px 80px rgba(0,0,0,0.9);
+    width: 320px;
+    max-height: 450px;
+    right: 0;
+    top: 60px;
+    animation: slideIn 0.3s ease-out;
+}
+
+.p-pop-header {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(34, 211, 238, 0.05);
+}
+
+.p-pop-header span { font-weight: 800; color: var(--primary); font-size: 0.9rem; }
+.p-pop-header button { background: transparent; color: var(--text-muted); font-size: 1.2rem; cursor: pointer; }
+
+.p-pop-content {
+  padding: 1rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
 .p-category-group {
@@ -172,28 +191,46 @@
 }
 
 .p-group-title {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 800;
-  color: var(--primary);
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 1px;
-  border-bottom: 1px solid rgba(34, 211, 238, 0.1);
-  padding-bottom: 4px;
+  margin-bottom: 0.8rem;
+}
+
+.p-options-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
 }
 
 .p-option {
-  padding: 0.6rem;
-  font-size: 0.8rem;
-  background: var(--sidebar-bg);
+  padding: 0.8rem 1rem;
+  font-size: 0.85rem;
+  background: rgba(255,255,255,0.03);
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 10px;
   color: var(--text-main);
   cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s;
 }
 
 .p-option:hover {
+  background: rgba(34, 211, 238, 0.1);
   border-color: var(--primary);
-  color: var(--primary);
+  transform: translateX(4px);
+}
+
+.p-name { font-weight: 600; }
+.p-price { font-weight: 800; color: var(--success); font-size: 0.75rem; }
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .payment-selection-box {

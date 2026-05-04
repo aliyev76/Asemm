@@ -199,23 +199,33 @@ const MachineCard = ({ table, prices, onStart, onEnd, onCancel, onTransfer, onUp
           
           {showProductMenu && (
             <div className="p-selector-pop">
-               {Object.entries(
-                 availableProducts.reduce((acc, p) => {
-                   const cat = p.category || 'Diğer';
-                   if (!acc[cat]) acc[cat] = [];
-                   acc[cat].push(p);
-                   return acc;
-                 }, {})
-               ).map(([cat, pList]) => (
-                 <div key={cat} className="p-category-group">
-                   <div className="p-group-title">{cat}</div>
-                   {pList.map(p => (
-                     <button key={p.id} className="p-option" onClick={() => { onAddProduct(p); setShowProductMenu(false); }}>
-                       {p.name} ({p.price} TL)
-                     </button>
-                   ))}
-                 </div>
-               ))}
+               <div className="p-pop-header">
+                 <span>Ürün Seçin</span>
+                 <button onClick={() => setShowProductMenu(false)}>✕</button>
+               </div>
+               <div className="p-pop-content">
+                {Object.entries(
+                  (availableProducts || []).reduce((acc, p) => {
+                    const cat = p.category || 'Diğer';
+                    if (!acc[cat]) acc[cat] = [];
+                    acc[cat].push(p);
+                    return acc;
+                  }, {})
+                ).map(([cat, pList]) => (
+                  <div key={cat} className="p-category-group">
+                    <div className="p-group-title">{cat}</div>
+                    <div className="p-options-grid">
+                      {pList.map(p => (
+                        <button key={p.id} className="p-option" onClick={() => { onAddProduct(p); setShowProductMenu(false); }}>
+                          <span className="p-name">{p.name}</span>
+                          <span className="p-price">{p.price} TL</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+                {(availableProducts || []).length === 0 && <p className="empty-msg">Ürün bulunamadı.</p>}
+               </div>
             </div>
           )}
 
