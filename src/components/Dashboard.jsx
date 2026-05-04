@@ -183,6 +183,20 @@ const Dashboard = ({ activeTab }) => {
        }));
     }
 
+    // Debt to Discount Migration (One-time for current session)
+    const DEBT_MIGRATION_VERSION = "1.0";
+    const currentDebtMigVersion = localStorage.getItem('asemm_debt_mig_version');
+    if (currentDebtMigVersion !== DEBT_MIGRATION_VERSION) {
+       console.log("[MIGRATION] Moving all current debts to discounts...");
+       setLogs(prev => prev.map(log => {
+         if (log.debt > 0) {
+           return { ...log, discount: (parseFloat(log.discount) || 0) + parseFloat(log.debt), debt: 0 };
+         }
+         return log;
+       }));
+       localStorage.setItem('asemm_debt_mig_version', DEBT_MIGRATION_VERSION);
+    }
+
     localStorage.setItem('asemm_tables', JSON.stringify(tables));
     localStorage.setItem('asemm_vips', JSON.stringify(vips));
     localStorage.setItem('asemm_prices', JSON.stringify(prices));
