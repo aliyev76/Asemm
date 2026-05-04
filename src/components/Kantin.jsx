@@ -2,12 +2,15 @@ import React, { useState, useMemo } from 'react';
 import './Kantin.css';
 import { translations } from '../lib/i18n/translations';
 
+const CATEGORIES = ["Mutfak / Yemek", "Atıştırmalık", "Soğuk İçecek", "Sıcak İçecek", "Kahve", "Diğer"];
+
 const Kantin = ({ products, setProducts }) => {
   const t = translations.tr.kantin; // Şimdilik varsayılan Türkçe
-  const [newProduct, setNewProduct] = useState({ name: '', price: '', stock: '' });
+  const [newProduct, setNewProduct] = useState({ name: '', price: '', stock: '', category: 'Atıştırmalık' });
   const [editId, setEditId] = useState(null);
   const [editedProduct, setEditedProduct] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
   const [sortBy, setSortBy] = useState('newest'); // 'newest' or 'alpha'
 
   const handleAdd = (e) => {
@@ -19,10 +22,11 @@ const Kantin = ({ products, setProducts }) => {
       name: newProduct.name,
       price: parseFloat(newProduct.price),
       stock: parseInt(newProduct.stock) || 0,
+      category: newProduct.category,
       createdAt: new Date().toISOString()
     }, ...products]); // Rule: New items on top
     
-    setNewProduct({ name: '', price: '', stock: '' });
+    setNewProduct({ name: '', price: '', stock: '', category: 'Atıştırmalık' });
   };
 
   const startEdit = (p) => {
@@ -39,11 +43,16 @@ const Kantin = ({ products, setProducts }) => {
   const processedProducts = useMemo(() => {
     let result = [...products];
 
-    // Filter
+    // Filter by search
     if (searchTerm) {
       result = result.filter(p => 
         p.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
+    }
+
+    // Filter by category
+    if (selectedCategory !== 'All') {
+      result = result.filter(p => p.category === selectedCategory);
     }
 
     // Sort
@@ -59,7 +68,7 @@ const Kantin = ({ products, setProducts }) => {
     }
 
     return result;
-  }, [products, searchTerm, sortBy]);
+  }, [products, searchTerm, sortBy, selectedCategory]);
 
   return (
     <div className="kantin-container">
@@ -86,13 +95,14 @@ const Kantin = ({ products, setProducts }) => {
               />
             </div>
             <div className="input-group">
-              <label>{t.stock}</label>
-              <input 
-                type="number" 
-                value={newProduct.stock} 
-                onChange={(e) => setNewProduct({...newProduct, stock: e.target.value})}
-                placeholder="Opsiyonel"
-              />
+              <label>Kategori</label>
+              <select 
+                className="category-select-form"
+                value={newProduct.category} 
+                onChange={(e) => setNewProduct({...newProduct, category: e.target.value})}
+              >
+                {CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+              </select>
             </div>
             <button className="main-btn start" type="submit">{t.save_product}</button>
           </form>
@@ -101,6 +111,23 @@ const Kantin = ({ products, setProducts }) => {
         <div className="card kantin-list">
           <div className="list-header">
             <h3>📋 {t.product_list}</h3>
+            <div className="category-chips">
+              <button 
+                className={`chip ${selectedCategory === 'All' ? 'active' : ''}`}
+                onClick={() => setSelectedCategory('All')}
+              >
+                Tümü
+              </button>
+              {CATEGORIES.map(cat => (
+                <button 
+                  key={cat}
+                  className={`chip ${selectedCategory === cat ? 'active' : ''}`}
+                  onClick={() => setSelectedCategory(cat)}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
             <div className="list-controls">
               <input 
                 type="text" 
@@ -119,6 +146,7 @@ const Kantin = ({ products, setProducts }) => {
             <thead>
               <tr>
                 <th>{t.product_name}</th>
+                <th>Kategori</th>
                 <th>Fiyat</th>
                 <th>{t.stock}</th>
                 <th>İşlem</th>
@@ -130,6 +158,11 @@ const Kantin = ({ products, setProducts }) => {
                   {editId === p.id ? (
                     <>
                       <td><input className="edit-input" type="text" value={editedProduct.name} onChange={e => setEditedProduct({...editedProduct, name: e.target.value})} /></td>
+                      <td>
+                        <select className="edit-input" value={editedProduct.category} onChange={e => setEditedProduct({...editedProduct, category: e.target.value})}>
+                          {CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                        </select>
+                      </td>
                       <td><input className="edit-input small" type="number" value={editedProduct.price} onChange={e => setEditedProduct({...editedProduct, price: parseFloat(e.target.value)})} /></td>
                       <td><input className="edit-input small" type="number" value={editedProduct.stock} onChange={e => setEditedProduct({...editedProduct, stock: parseInt(e.target.value)})} /></td>
                       <td>
@@ -140,6 +173,7 @@ const Kantin = ({ products, setProducts }) => {
                   ) : (
                     <>
                       <td>{p.name}</td>
+                      <td><span className="p-category-tag">{p.category}</span></td>
                       <td>{p.price} TL</td>
                       <td>{p.stock}</td>
                       <td className="actions-cell">

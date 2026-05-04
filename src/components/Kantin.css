@@ -20,7 +20,7 @@
   font-size: 0.9rem;
 }
 
-.input-group input {
+.input-group input, .category-select-form {
   padding: 0.8rem;
   background: rgba(0,0,0,0.2);
   border: 1px solid var(--border);
@@ -29,7 +29,11 @@
   outline: none;
 }
 
-.input-group input:focus {
+.category-select-form option {
+  background: var(--card-bg);
+}
+
+.input-group input:focus, .category-select-form:focus {
   border-color: var(--primary);
 }
 
@@ -132,4 +136,37 @@
 .actions-cell {
   display: flex;
   gap: 0.5rem;
+}
+
+.category-chips {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.chip {
+  padding: 6px 14px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: 20px;
+  font-size: 0.8rem;
+  transition: all 0.3s ease;
+}
+
+.chip.active {
+  background: var(--primary);
+  color: var(--bg-color);
+  border-color: var(--primary);
+  font-weight: 700;
+}
+
+.p-category-tag {
+  background: rgba(255,255,255,0.05);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  color: var(--primary);
+  border: 1px solid rgba(34, 211, 238, 0.2);
 }
