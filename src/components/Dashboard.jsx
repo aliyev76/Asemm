@@ -93,6 +93,11 @@ const Dashboard = ({ activeTab }) => {
     {"id":3,"name":"SU","price":15,"stock":100, "category": "Soğuk İçecek"},
     {"id":4,"name":"SADE SODA","price":25,"stock":0, "category": "Soğuk İçecek"},
     {"id":5,"name":"MEYVELİ SODA","price":30,"stock":0, "category": "Soğuk İçecek"},
+    {"id":6,"name":"FUSE TEA","price":60,"stock":0, "category": "Soğuk İçecek"},
+    {"id":7,"name":"DARK BLUE","price":60,"stock":0, "category": "Soğuk İçecek"},
+    {"id":8,"name":"SOĞUK KAHVE","price":60,"stock":0, "category": "Soğuk İçecek"},
+    {"id":9,"name":"AYRAN","price":20,"stock":0, "category": "Soğuk İçecek"},
+    {"id":10,"name":"GAZOZ","price":40,"stock":0, "category": "Soğuk İçecek"},
     {"id":1776542698600,"name":"KURUVASAN","price":50,"stock":0, "category": "Yemek"},
     {"id":1776542770577,"name":"DÖNER YARIM","price":100,"stock":0, "category": "Yemek"},
     {"id":1776542785476,"name":"ALMAN PASTASI","price":50,"stock":0, "category": "Yemek"},
@@ -185,8 +190,8 @@ const Dashboard = ({ activeTab }) => {
     if (JSON.stringify(normalizedVips) !== JSON.stringify(vips)) setVips(normalizedVips);
 
     // Ürün Listesi Zorunlu Güncelleme: Eğer yeni ürünlerden biri listede yoksa zorla güncelle
-    const hasCokonat = products.some(p => p.name === 'ÇOKONAT');
-    if (!hasCokonat) {
+    const hasFuseTea = products.some(p => p.name === 'FUSE TEA');
+    if (!hasFuseTea) {
        console.log("[MIGRATION] Full product list not found, forcing update...");
        const fullList = [
         {"id":1,"name":"COCA COLA TENEKE","price":60,"stock":50, "category": "Soğuk İçecek"},
@@ -194,6 +199,11 @@ const Dashboard = ({ activeTab }) => {
         {"id":3,"name":"SU","price":15,"stock":100, "category": "Soğuk İçecek"},
         {"id":4,"name":"SADE SODA","price":25,"stock":0, "category": "Soğuk İçecek"},
         {"id":5,"name":"MEYVELİ SODA","price":30,"stock":0, "category": "Soğuk İçecek"},
+        {"id":6,"name":"FUSE TEA","price":60,"stock":0, "category": "Soğuk İçecek"},
+        {"id":7,"name":"DARK BLUE","price":60,"stock":0, "category": "Soğuk İçecek"},
+        {"id":8,"name":"SOĞUK KAHVE","price":60,"stock":0, "category": "Soğuk İçecek"},
+        {"id":9,"name":"AYRAN","price":20,"stock":0, "category": "Soğuk İçecek"},
+        {"id":10,"name":"GAZOZ","price":40,"stock":0, "category": "Soğuk İçecek"},
         {"id":1776542698600,"name":"KURUVASAN","price":50,"stock":0, "category": "Yemek"},
         {"id":1776542770577,"name":"DÖNER YARIM","price":100,"stock":0, "category": "Yemek"},
         {"id":1776542785476,"name":"ALMAN PASTASI","price":50,"stock":0, "category": "Yemek"},
