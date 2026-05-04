@@ -10,6 +10,7 @@ const Reports = ({ logs, setLogs, history, onEndDay, openingBalance = 0, expense
   const totalNakit = logs.reduce((sum, log) => sum + (parseFloat(log.nakit) || 0), 0);
   const totalIban = logs.reduce((sum, log) => sum + (parseFloat(log.iban) || 0), 0);
   const totalDebt = logs.reduce((sum, log) => sum + (parseFloat(log.debt) || 0), 0);
+  const totalDiscount = logs.reduce((sum, log) => sum + (parseFloat(log.discount) || 0), 0);
   const totalProducts = logs.reduce((sum, log) => sum + (parseFloat(log.productsTotal) || 0), 0);
   
   const totalExpenses = expenses.reduce((sum, exp) => sum + (parseFloat(exp.amount) || 0), 0);
@@ -62,6 +63,10 @@ const Reports = ({ logs, setLogs, history, onEndDay, openingBalance = 0, expense
               <span className="label">⚠️ Borç</span>
               <span className="value">{totalDebt.toFixed(2)} TL</span>
             </div>
+            <div className="card stat-card discount">
+              <span className="label">🏷️ İndirim</span>
+              <span className="value">{totalDiscount.toFixed(2)} TL</span>
+            </div>
             <div className="card stat-card expense">
               <span className="label">📉 Gider</span>
               <span className="value">-{totalExpenses.toFixed(2)} TL</span>
@@ -109,6 +114,7 @@ const Reports = ({ logs, setLogs, history, onEndDay, openingBalance = 0, expense
                       <div className="log-methods">
                          {log.nakit > 0 && <span className="m-tag n">N:{log.nakit}</span>}
                          {log.iban > 0 && <span className="m-tag i">I:{log.iban}</span>}
+                         {log.discount > 0 && <span className="m-tag s" style={{background: '#fbbf24', color: '#000'}}>İ:{log.discount}</span>}
                          {log.debt > 0 && <span className="m-tag d" title={log.note}>B:{log.debt}</span>}
                       </div>
                       <span className="log-amount">{log.total.toFixed(2)} TL</span>
@@ -165,6 +171,7 @@ const Reports = ({ logs, setLogs, history, onEndDay, openingBalance = 0, expense
               <div className="summary-pills">
                 <div className="pill"><span>Nakit:</span> {selectedDay.nakit.toFixed(2)} TL</div>
                 <div className="pill"><span>IBAN:</span> {selectedDay.iban.toFixed(2)} TL</div>
+                <div className="pill"><span>İndirim:</span> {selectedDay.discount?.toFixed(2) || '0.00'} TL</div>
                 <div className="pill"><span>Borç:</span> {selectedDay.debt?.toFixed(2) || '0.00'} TL</div>
                 <div className="pill"><span>Ürün:</span> {selectedDay.productsTotal.toFixed(2)} TL</div>
                 <div className="pill"><span>Oyun:</span> {selectedDay.timeTotal.toFixed(2)} TL</div>

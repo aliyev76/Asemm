@@ -620,9 +620,38 @@
   border-color: var(--danger);
 }
 
-.sec-btn.info {
-  flex: 1;
-  background: rgba(34, 211, 238, 0.1);
-  color: var(--primary);
-  border-color: rgba(34, 211, 238, 0.2);
+.sec-btn.info.large-btn {
+  flex: 2;
+  background: var(--primary);
+  color: #000;
+  border-color: var(--primary);
+  padding: 0.8rem;
+  font-size: 1rem;
+}
+
+.sec-btn.info.large-btn:hover {
+  background: #22d3ee;
+  transform: scale(1.02);
+}
+
+.auto-discount-link {
+  background: var(--primary);
+  color: #000;
+  border: none;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+
+.debt-info-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.auto-discount-link:hover {
+  background: white;
 }

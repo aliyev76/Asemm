@@ -100,6 +100,7 @@ const MachineCard = ({ table, prices, onStart, onEnd, onCancel, onTransfer, onUp
     setCustomEndTime(formatHHMM(new Date()));
     setCashAmount(total); // Varsayılan nakit
     setIbanAmount(0);
+    setDiscountAmount(0);
     setDebtAmount(0);
     setDebtorNote('');
     setShowPaymentSelection(true);
@@ -252,7 +253,7 @@ const MachineCard = ({ table, prices, onStart, onEnd, onCancel, onTransfer, onUp
                   if (window.confirm('Masayı iptal etmek istediğinize emin misiniz?')) onCancel();
                 }}>İptal Et</button>
                 <div className="transfer-wrapper">
-                  <button className="sec-btn info" onClick={() => setShowTransferMenu(!showTransferMenu)}>Aktar</button>
+                  <button className="sec-btn info large-btn" onClick={() => setShowTransferMenu(!showTransferMenu)}>Masayı Aktar</button>
                   {showTransferMenu && (
                     <div className="transfer-menu">
                       {availableIdleTables.length === 0 ? <span className="empty-msg">Boş masa yok</span> : 
@@ -305,8 +306,15 @@ const MachineCard = ({ table, prices, onStart, onEnd, onCancel, onTransfer, onUp
              {debtAmount > 0 && (
                 <div className="debt-notice-box">
                    <div className="debt-row">
-                      <span className="debt-label">⚠️ EKSİK / BORÇ:</span>
-                      <span className="debt-val">{debtAmount} TL</span>
+                      <div className="debt-info-left">
+                        <span className="debt-label">⚠️ EKSİK / BORÇ:</span>
+                        <span className="debt-val">{debtAmount} TL</span>
+                      </div>
+                      <button className="auto-discount-link" onClick={() => {
+                        const total = parseFloat(calculateCost());
+                        const paid = (parseFloat(cashAmount) || 0) + (parseFloat(ibanAmount) || 0);
+                        setDiscountAmount((total - paid).toFixed(2));
+                      }}>İndirim Olarak Say</button>
                    </div>
                    <input 
                       type="text" 
