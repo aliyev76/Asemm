@@ -290,9 +290,26 @@ const Dashboard = ({ activeTab }) => {
     setter(prev => prev.map(t => t.id === id ? { ...t, controllers: count } : t));
   };
 
-  const handleAddProductToTable = (tableId, isVip, product) => {
-     const setter = isVip ? setVips : setTables;
-     setter(prev => prev.map(t => t.id === tableId ? { ...t, products: [...t.products, product] } : t));
+  const handleAddProduct = (id, product, isVip = false) => {
+    const setter = isVip ? setVips : setTables;
+    setter(prev => prev.map(t => {
+      if (String(t.id) === String(id)) {
+        return { ...t, products: [...t.products, { ...product, timestamp: Date.now() }] };
+      }
+      return t;
+    }));
+  };
+
+  const handleRemoveProduct = (id, productIndex, isVip = false) => {
+    const setter = isVip ? setVips : setTables;
+    setter(prev => prev.map(t => {
+      if (String(t.id) === String(id)) {
+        const newProducts = [...t.products];
+        newProducts.splice(productIndex, 1);
+        return { ...t, products: newProducts };
+      }
+      return t;
+    }));
   };
 
   const handleCancelSession = (id, isVip) => {
@@ -575,7 +592,8 @@ const Dashboard = ({ activeTab }) => {
               onUpdateStartTime={(timeStr) => handleUpdateStartTime(selectedTable.id, selectedTableInfo.isVip, timeStr)}
               availableIdleTables={[...tables, ...vips].filter(t => t.status === 'idle' && t.id !== selectedTable.id)}
               onUpdateControllers={(count) => handleUpdateControllers(selectedTable.id, selectedTableInfo.isVip, count)}
-              onAddProduct={(p) => handleAddProductToTable(selectedTable.id, selectedTableInfo.isVip, p)}
+              onAddProduct={(p) => handleAddProduct(selectedTable.id, p, selectedTableInfo.isVip)}
+              onRemoveProduct={(idx) => handleRemoveProduct(selectedTable.id, idx, selectedTableInfo.isVip)}
               availableProducts={products}
             />
           </div>

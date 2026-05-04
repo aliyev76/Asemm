@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './MachineCard.css';
 import { translations } from '../lib/i18n/translations';
 
-const MachineCard = ({ table, prices, onStart, onEnd, onCancel, onTransfer, onUpdateStartTime, availableIdleTables, onUpdateControllers, onAddProduct, availableProducts }) => {
+const MachineCard = ({ table, prices, onStart, onEnd, onCancel, onTransfer, onUpdateStartTime, availableIdleTables, onUpdateControllers, onAddProduct, onRemoveProduct, availableProducts }) => {
   const t = translations.tr; // Genel çeviri nesnesi
   const [elapsedTime, setElapsedTime] = useState(0);
   const [showProductMenu, setShowProductMenu] = useState(false);
@@ -231,7 +231,10 @@ const MachineCard = ({ table, prices, onStart, onEnd, onCancel, onTransfer, onUp
 
           <div className="p-list-mini">
             {table.products.map((p, idx) => (
-              <div key={idx} className="p-tag">{p.name} - {p.price} TL</div>
+              <div key={idx} className="p-tag">
+                <span>{p.name} - {p.price} TL</span>
+                <button className="remove-p-btn" onClick={() => onRemoveProduct(idx)}>✕</button>
+              </div>
             ))}
           </div>
       </div>
