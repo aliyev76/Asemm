@@ -169,11 +169,11 @@ const Dashboard = ({ activeTab }) => {
     if (JSON.stringify(normalizedTables) !== JSON.stringify(tables)) setTables(normalizedTables);
     if (JSON.stringify(normalizedVips) !== JSON.stringify(vips)) setVips(normalizedVips);
 
-    // Ürün Listesi Güncelleme: Eğer eski 3 ürünlük liste varsa zorla yeni listeyi bas
-    const isOldProductList = products.length <= 3 && products.some(p => p.name === 'Kola' || p.name === 'Kola' || p.name === 'Tost');
-    if (isOldProductList) {
-       console.log("[MIGRATION] Old product list detected, updating to 30 items...");
-       const defaultProducts = [
+    // Ürün Listesi Zorunlu Güncelleme: Eğer yeni ürünlerden biri listede yoksa zorla güncelle
+    const hasFullList = products.some(p => p.name === 'COCA COLA TENEKE');
+    if (!hasFullList) {
+       console.log("[MIGRATION] Full product list not found, forcing update...");
+       const fullList = [
         {"id":1,"name":"COCA COLA TENEKE","price":60,"stock":50, "category": "Soğuk İçecek"},
         {"id":2,"name":"TOST","price":60,"stock":20, "category": "Yemek"},
         {"id":3,"name":"SU","price":10,"stock":100, "category": "Soğuk İçecek"},
@@ -204,18 +204,8 @@ const Dashboard = ({ activeTab }) => {
         {"id":1776547389874,"name":"PELUŞ OYUNCAK KÜÇÜK","price":100,"stock":0, "category": "Diğer"},
         {"id":1776547400805,"name":"PELUŞ OYUNCAK BÜYÜK","price":150,"stock":0, "category": "Diğer"},
         {"id":1776547418358,"name":"PELUŞ OYUNCAK EN BÜYÜK BOY","price":400,"stock":0, "category": "Diğer"}
-      ];
-      setProducts(defaultProducts);
-      localStorage.setItem('asemm_products', JSON.stringify(defaultProducts));
-    }
-
-    // Prices migration (regular -> standart)
-    if (prices.regular) {
-      setPrices(prev => {
-        const newPrices = { ...prev, standart: prev.regular };
-        delete newPrices.regular;
-        return newPrices;
-      });
+       ];
+       setProducts(fullList);
     }
 
     localStorage.setItem('asemm_tables', JSON.stringify(tables));
@@ -223,27 +213,7 @@ const Dashboard = ({ activeTab }) => {
     localStorage.setItem('asemm_prices', JSON.stringify(prices));
     localStorage.setItem('asemm_logs', JSON.stringify(logs));
     localStorage.setItem('asemm_history', JSON.stringify(history));
-
-    // SAFE SAVE for products: Eğer elimizdeki liste varsayılan listeyse (3 öğe) 
-    // veya içindeki veri azsa, asla localStorage üzerine yazma!
-    const existingRaw = localStorage.getItem('asemm_products');
-    let shouldSaveProducts = true;
-    if (products.length <= 3) {
-       // Mevcut hafızada daha fazlası varsa sakın dokunma!
-       if (existingRaw) {
-          try {
-            const ep = JSON.parse(existingRaw);
-            if (ep.length > products.length) {
-               console.warn("[SafeSave] Data preserved: Avoiding overwrite with smaller list.");
-               shouldSaveProducts = false;
-            }
-          } catch(e) {}
-       }
-    }
-
-    if (shouldSaveProducts) {
-      localStorage.setItem('asemm_products', JSON.stringify(products));
-    }
+    localStorage.setItem('asemm_products', JSON.stringify(products));
   }, [tables, vips, prices, logs, history, products]);
 
   const allGames = useMemo(() => {
