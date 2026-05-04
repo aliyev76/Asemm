@@ -90,7 +90,9 @@ const Dashboard = ({ activeTab }) => {
   const [products, setProducts] = React.useState(() => getSaved('asemm_products', [
     {"id":1,"name":"COCA COLA TENEKE","price":60,"stock":50, "category": "Soğuk İçecek"},
     {"id":2,"name":"TOST","price":60,"stock":20, "category": "Yemek"},
-    {"id":3,"name":"SU","price":10,"stock":100, "category": "Soğuk İçecek"},
+    {"id":3,"name":"SU","price":15,"stock":100, "category": "Soğuk İçecek"},
+    {"id":4,"name":"SADE SODA","price":25,"stock":0, "category": "Soğuk İçecek"},
+    {"id":5,"name":"MEYVELİ SODA","price":30,"stock":0, "category": "Soğuk İçecek"},
     {"id":1776542698600,"name":"KURUVASAN","price":50,"stock":0, "category": "Yemek"},
     {"id":1776542770577,"name":"DÖNER YARIM","price":100,"stock":0, "category": "Yemek"},
     {"id":1776542785476,"name":"ALMAN PASTASI","price":50,"stock":0, "category": "Yemek"},
@@ -182,13 +184,15 @@ const Dashboard = ({ activeTab }) => {
     if (JSON.stringify(normalizedVips) !== JSON.stringify(vips)) setVips(normalizedVips);
 
     // Ürün Listesi Zorunlu Güncelleme: Eğer yeni ürünlerden biri listede yoksa zorla güncelle
-    const hasOralet = products.some(p => p.name === 'ORALET');
-    if (!hasOralet) {
+    const hasSadeSoda = products.some(p => p.name === 'SADE SODA');
+    if (!hasSadeSoda) {
        console.log("[MIGRATION] Full product list not found, forcing update...");
        const fullList = [
         {"id":1,"name":"COCA COLA TENEKE","price":60,"stock":50, "category": "Soğuk İçecek"},
         {"id":2,"name":"TOST","price":60,"stock":20, "category": "Yemek"},
-        {"id":3,"name":"SU","price":10,"stock":100, "category": "Soğuk İçecek"},
+        {"id":3,"name":"SU","price":15,"stock":100, "category": "Soğuk İçecek"},
+        {"id":4,"name":"SADE SODA","price":25,"stock":0, "category": "Soğuk İçecek"},
+        {"id":5,"name":"MEYVELİ SODA","price":30,"stock":0, "category": "Soğuk İçecek"},
         {"id":1776542698600,"name":"KURUVASAN","price":50,"stock":0, "category": "Yemek"},
         {"id":1776542770577,"name":"DÖNER YARIM","price":100,"stock":0, "category": "Yemek"},
         {"id":1776542785476,"name":"ALMAN PASTASI","price":50,"stock":0, "category": "Yemek"},
