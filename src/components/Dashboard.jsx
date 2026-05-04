@@ -124,7 +124,8 @@ const Dashboard = ({ activeTab }) => {
     {"id":1777899732001,"name":"CİĞ KÖFTE PORSİYON","price":100,"stock":0, "category": "Yemek"},
     {"id":1777900000001,"name":"KAHVE","price":40,"stock":0, "category": "Sıcak İçecek"},
     {"id":1777900000002,"name":"ORALET","price":40,"stock":0, "category": "Sıcak İçecek"},
-    {"id":1777900000003,"name":"ÇAY","price":30,"stock":0, "category": "Sıcak İçecek"}
+    {"id":1777900000003,"name":"ÇAY","price":30,"stock":0, "category": "Sıcak İçecek"},
+    {"id":1777900000004,"name":"ÇOKONAT","price":50,"stock":0, "category": "Atıştırmalık"}
   ]));
 
   const [openingBalance, setOpeningBalance] = React.useState(() => getSaved('asemm_opening_balance', 0));
@@ -184,8 +185,8 @@ const Dashboard = ({ activeTab }) => {
     if (JSON.stringify(normalizedVips) !== JSON.stringify(vips)) setVips(normalizedVips);
 
     // Ürün Listesi Zorunlu Güncelleme: Eğer yeni ürünlerden biri listede yoksa zorla güncelle
-    const hasSadeSoda = products.some(p => p.name === 'SADE SODA');
-    if (!hasSadeSoda) {
+    const hasCokonat = products.some(p => p.name === 'ÇOKONAT');
+    if (!hasCokonat) {
        console.log("[MIGRATION] Full product list not found, forcing update...");
        const fullList = [
         {"id":1,"name":"COCA COLA TENEKE","price":60,"stock":50, "category": "Soğuk İçecek"},
@@ -224,7 +225,8 @@ const Dashboard = ({ activeTab }) => {
         {"id":1777899732001,"name":"CİĞ KÖFTE PORSİYON","price":100,"stock":0, "category": "Yemek"},
         {"id":1777900000001,"name":"KAHVE","price":40,"stock":0, "category": "Sıcak İçecek"},
         {"id":1777900000002,"name":"ORALET","price":40,"stock":0, "category": "Sıcak İçecek"},
-        {"id":1777900000003,"name":"ÇAY","price":30,"stock":0, "category": "Sıcak İçecek"}
+        {"id":1777900000003,"name":"ÇAY","price":30,"stock":0, "category": "Sıcak İçecek"},
+        {"id":1777900000004,"name":"ÇOKONAT","price":50,"stock":0, "category": "Atıştırmalık"}
        ];
        setProducts(fullList);
     }
