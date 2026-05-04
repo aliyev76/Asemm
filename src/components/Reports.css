@@ -23,9 +23,12 @@
 .stat-card.iban { border-color: #8b5cf6; }
 .stat-card.debt { border-color: var(--danger); }
 .stat-card.products { border-color: var(--accent); }
+.stat-card.expense { border-color: var(--danger); }
+.stat-card.total-cash { border-color: var(--primary); background: rgba(34, 211, 238, 0.05); }
 
 .stat-card .label { font-size: 0.85rem; color: var(--text-muted); font-weight: 700; }
 .stat-card .value { font-size: 1.8rem; font-weight: 900; }
+.stat-card .value.highlight { color: var(--primary); text-shadow: 0 0 10px rgba(34, 211, 238, 0.3); }
 
 .report-details-grid {
   display: grid;
@@ -294,3 +297,7 @@
   font-weight: 800;
   color: var(--danger);
 }
+
+.pill.danger span { color: var(--danger); }
+.pill.success span { color: var(--success); }
+.d-item.expense .d-val { color: var(--danger); }
