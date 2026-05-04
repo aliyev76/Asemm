@@ -95,6 +95,11 @@ const Dashboard = ({ activeTab }) => {
   const [selectedGame, setSelectedGame] = React.useState(null); 
   const [selectedStatus, setSelectedStatus] = React.useState(null); 
 
+  // Tab değişince modalı kapat (üst üste binme hatasını önler)
+  React.useEffect(() => {
+    setSelectedTableInfo(null);
+  }, [activeTab]);
+
   const t = translations.tr.dashboard; // Şimdilik varsayılan Türkçe
 
   // EMERGENCY RESCUE: Tüm localStorage'ı tara ve kaybolan verileri bulmaya çalış
@@ -414,10 +419,17 @@ const Dashboard = ({ activeTab }) => {
     );
   };
 
-  // Seçili masayı bul
-  const selectedTable = selectedTableInfo 
-    ? (selectedTableInfo.isVip ? vips : tables).find(t => t.id === selectedTableInfo.id)
-    : null;
+  const selectedTable = useMemo(() => {
+    if (!selectedTableInfo) return null;
+    const list = selectedTableInfo.isVip ? vips : tables;
+    let table = list.find(t => String(t.id) === String(selectedTableInfo.id));
+    
+    // Güvenlik: Eğer yanlış listede arandıysa diğerine de bak
+    if (!table) {
+      table = [...tables, ...vips].find(t => String(t.id) === String(selectedTableInfo.id));
+    }
+    return table;
+  }, [selectedTableInfo, tables, vips]);
 
   return (
     <div className="dashboard-wrapper">
@@ -428,6 +440,7 @@ const Dashboard = ({ activeTab }) => {
           <div className="modal-container" onClick={(e) => e.stopPropagation()}>
             <button className="close-modal" onClick={() => setSelectedTableInfo(null)}>✕</button>
             <MachineCard 
+              key={selectedTable.id} // Masa değişince state'i sıfırla
               table={selectedTable}
               prices={prices}
               onStart={() => handleStartSession(selectedTable.id, selectedTableInfo.isVip)}
