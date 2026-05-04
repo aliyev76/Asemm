@@ -1,7 +1,7 @@
 import React from 'react';
 import './Reports.css';
 
-const Reports = ({ logs, setLogs, history, onEndDay }) => {
+const Reports = ({ logs, setLogs, history, onEndDay, openingBalance = 0, expenses = [] }) => {
   const [view, setView] = React.useState('live'); // 'live' or 'history'
   const [selectedDay, setSelectedDay] = React.useState(null);
   const [isConfirming, setIsConfirming] = React.useState(false);
@@ -11,6 +11,9 @@ const Reports = ({ logs, setLogs, history, onEndDay }) => {
   const totalIban = logs.reduce((sum, log) => sum + (parseFloat(log.iban) || 0), 0);
   const totalDebt = logs.reduce((sum, log) => sum + (parseFloat(log.debt) || 0), 0);
   const totalProducts = logs.reduce((sum, log) => sum + (parseFloat(log.productsTotal) || 0), 0);
+  
+  const totalExpenses = expenses.reduce((sum, exp) => sum + (parseFloat(exp.amount) || 0), 0);
+  const netCashInHand = (parseFloat(openingBalance) || 0) + totalNakit - totalExpenses;
 
   const calculateProductStats = (data) => {
     const stats = {};
@@ -59,9 +62,13 @@ const Reports = ({ logs, setLogs, history, onEndDay }) => {
               <span className="label">⚠️ Borç</span>
               <span className="value">{totalDebt.toFixed(2)} TL</span>
             </div>
-            <div className="card stat-card products">
-              <span className="label">🍟 Ürün Geliri</span>
-              <span className="value">{totalProducts.toFixed(2)} TL</span>
+            <div className="card stat-card expense">
+              <span className="label">📉 Gider</span>
+              <span className="value">-{totalExpenses.toFixed(2)} TL</span>
+            </div>
+            <div className="card stat-card total-cash">
+              <span className="label">💰 Kasa (Nakit)</span>
+              <span className="value highlight">{netCashInHand.toFixed(2)} TL</span>
             </div>
           </div>
 
@@ -161,7 +168,22 @@ const Reports = ({ logs, setLogs, history, onEndDay }) => {
                 <div className="pill"><span>Borç:</span> {selectedDay.debt?.toFixed(2) || '0.00'} TL</div>
                 <div className="pill"><span>Ürün:</span> {selectedDay.productsTotal.toFixed(2)} TL</div>
                 <div className="pill"><span>Oyun:</span> {selectedDay.timeTotal.toFixed(2)} TL</div>
+                <div className="pill danger"><span>Gider:</span> {selectedDay.totalExpenses?.toFixed(2) || '0.00'} TL</div>
+                <div className="pill success"><span>Net Kasa:</span> {selectedDay.netCashInHand?.toFixed(2) || '0.00'} TL</div>
               </div>
+
+              {selectedDay.expenses && selectedDay.expenses.length > 0 && (
+                <div className="history-expenses">
+                  <h4>💸 Günlük Giderler</h4>
+                  <div className="d-list">
+                    {selectedDay.expenses.map((e, i) => (
+                      <div key={i} className="d-item expense">
+                        <strong>{e.time}</strong> - {e.description}: <span className="d-val">-{e.amount} TL</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {selectedDay.debtorLogs && selectedDay.debtorLogs.length > 0 && (
                 <div className="history-debts">

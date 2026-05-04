@@ -381,6 +381,9 @@ const Dashboard = ({ activeTab }) => {
       });
     });
 
+    const totalExpenses = expenses.reduce((sum, exp) => sum + (parseFloat(exp.amount) || 0), 0);
+    const netCashInHand = (parseFloat(openingBalance) || 0) + nakitCount - totalExpenses;
+
     const daySummary = {
       id: Date.now(),
       date: new Date().toLocaleDateString('tr-TR'),
@@ -393,18 +396,33 @@ const Dashboard = ({ activeTab }) => {
       timeTotal,
       productStats,
       debtorLogs,
+      openingBalance: parseFloat(openingBalance) || 0,
+      expenses: [...expenses],
+      totalExpenses,
+      netCashInHand,
       numTransactions: logs.length
     };
 
     setHistory(prev => [daySummary, ...prev]);
     setLogs([]);
+    setExpenses([]);
+    setOpeningBalance(netCashInHand.toFixed(2));
     alert("Gün sonu başarıyla alındı ve arşivlendi!");
   };
 
   const getActiveView = () => {
     if (activeTab === 'kantin') return <Kantin products={products} setProducts={setProducts} />;
     if (activeTab === 'ayarlar') return <Settings prices={prices} setPrices={setPrices} />;
-    if (activeTab === 'reports') return <Reports logs={logs} setLogs={setLogs} history={history} onEndDay={handleEndDay} />;
+    if (activeTab === 'reports') return (
+      <Reports 
+        logs={logs} 
+        setLogs={setLogs} 
+        history={history} 
+        onEndDay={handleEndDay} 
+        openingBalance={openingBalance}
+        expenses={expenses}
+      />
+    );
     if (activeTab === 'kasa') return (
       <Kasa 
         logs={logs} 
