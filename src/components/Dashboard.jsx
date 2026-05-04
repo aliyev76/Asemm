@@ -118,6 +118,9 @@ const Dashboard = ({ activeTab }) => {
     {"id":1776547418358,"name":"PELUŞ OYUNCAK EN BÜYÜK BOY","price":400,"stock":0, "category": "Diğer"}
   ]));
 
+  const [openingBalance, setOpeningBalance] = React.useState(() => getSaved('asemm_opening_balance', 0));
+  const [expenses, setExpenses] = React.useState(() => getSaved('asemm_expenses', []));
+
   const [selectedTableInfo, setSelectedTableInfo] = React.useState(null); 
   const [selectedGame, setSelectedGame] = React.useState(null); 
   const [selectedStatus, setSelectedStatus] = React.useState(null); 
@@ -214,7 +217,9 @@ const Dashboard = ({ activeTab }) => {
     localStorage.setItem('asemm_logs', JSON.stringify(logs));
     localStorage.setItem('asemm_history', JSON.stringify(history));
     localStorage.setItem('asemm_products', JSON.stringify(products));
-  }, [tables, vips, prices, logs, history, products]);
+    localStorage.setItem('asemm_opening_balance', JSON.stringify(openingBalance));
+    localStorage.setItem('asemm_expenses', JSON.stringify(expenses));
+  }, [tables, vips, prices, logs, history, products, openingBalance, expenses]);
 
   const allGames = useMemo(() => {
     const games = new Set();
@@ -386,6 +391,15 @@ const Dashboard = ({ activeTab }) => {
     if (activeTab === 'kantin') return <Kantin products={products} setProducts={setProducts} />;
     if (activeTab === 'ayarlar') return <Settings prices={prices} setPrices={setPrices} />;
     if (activeTab === 'reports') return <Reports logs={logs} setLogs={setLogs} history={history} onEndDay={handleEndDay} />;
+    if (activeTab === 'kasa') return (
+      <Kasa 
+        logs={logs} 
+        openingBalance={openingBalance} 
+        setOpeningBalance={setOpeningBalance} 
+        expenses={expenses} 
+        setExpenses={setExpenses} 
+      />
+    );
     if (activeTab === 'yonetim') return (
       <AdminSettings 
         tables={tables} 

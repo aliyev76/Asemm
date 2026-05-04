@@ -12,7 +12,8 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
     { id: 'kantin', label: t.kantin, icon: '🍟' },
     { id: 'ayarlar', label: t.ayarlar, icon: '⚙️' },
     { id: 'yonetim', label: t.yonetim, icon: '🛠️' },
-    { id: 'reports', label: t.reports, icon: '💰' },
+    { id: 'reports', label: t.reports, icon: '📈' },
+    { id: 'kasa', label: 'Kasa', icon: '💰' },
   ];
 
   return (

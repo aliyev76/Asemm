@@ -1,0 +1,146 @@
+.kasa-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  animation: fadeIn 0.4s ease-out;
+}
+
+.kasa-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+}
+
+.kasa-stat-card {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  border-left: 4px solid var(--border);
+  transition: transform 0.3s ease;
+}
+
+.kasa-stat-card:hover {
+  transform: translateY(-5px);
+}
+
+.kasa-stat-card.opening { border-color: var(--accent); }
+.kasa-stat-card.income { border-color: var(--success); }
+.kasa-stat-card.spending { border-color: var(--danger); }
+.kasa-stat-card.total-cash { 
+  border-color: var(--primary);
+  background: linear-gradient(135deg, rgba(34, 211, 238, 0.05), rgba(34, 211, 238, 0.02));
+}
+
+.label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+
+.value {
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: var(--text-main);
+}
+
+.value.highlight {
+  color: var(--primary);
+  text-shadow: 0 0 15px rgba(34, 211, 238, 0.3);
+}
+
+.input-with-symbol {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(0,0,0,0.2);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.input-with-symbol input {
+  background: transparent;
+  border: none;
+  color: var(--accent);
+  font-size: 1.5rem;
+  font-weight: 800;
+  width: 100%;
+  outline: none;
+}
+
+.symbol {
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+.kasa-main-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 2rem;
+}
+
+.expense-form-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.expense-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.expense-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: rgba(255,255,255,0.03);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.exp-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.exp-time {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.exp-desc {
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.exp-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.exp-amount {
+  color: var(--danger);
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+  .kasa-main-grid {
+    grid-template-columns: 1fr;
+  }
+}

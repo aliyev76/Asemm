@@ -8,6 +8,7 @@ export const translations = {
       ayarlar: "Ayarlar",
       yonetim: "İdarəetmə",
       reports: "Gün Sonu",
+      kasa: "Kasa",
       system_active: "Sistem Aktivdir"
     },
     dashboard: {
@@ -41,6 +42,7 @@ export const translations = {
       ayarlar: "Ayarlar",
       yonetim: "Yönetim",
       reports: "Gün Sonu",
+      kasa: "Kasa",
       system_active: "Sistem Aktif"
     },
     dashboard: {
