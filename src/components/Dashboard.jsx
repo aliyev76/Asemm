@@ -189,10 +189,12 @@ const Dashboard = ({ activeTab }) => {
     if (JSON.stringify(normalizedTables) !== JSON.stringify(tables)) setTables(normalizedTables);
     if (JSON.stringify(normalizedVips) !== JSON.stringify(vips)) setVips(normalizedVips);
 
-    // Ürün Listesi Zorunlu Güncelleme: Eğer yeni ürünlerden biri listede yoksa zorla güncelle
-    const hasFuseTea = products.some(p => p.name === 'FUSE TEA');
-    if (!hasFuseTea) {
-       console.log("[MIGRATION] Full product list not found, forcing update...");
+    // Ürün Listesi Zorunlu Güncelleme (Versiyon 2 - Yeni Soğuk İçecekler)
+    const PRODUCT_VERSION = "2.1"; // Versiyonu artırdık
+    const currentVersion = localStorage.getItem('asemm_product_version');
+    
+    if (currentVersion !== PRODUCT_VERSION) {
+       console.log("[MIGRATION] Product version mismatch, forcing update to v" + PRODUCT_VERSION);
        const fullList = [
         {"id":1,"name":"COCA COLA TENEKE","price":60,"stock":50, "category": "Soğuk İçecek"},
         {"id":2,"name":"TOST","price":60,"stock":20, "category": "Yemek"},
@@ -239,6 +241,8 @@ const Dashboard = ({ activeTab }) => {
         {"id":1777900000004,"name":"ÇOKONAT","price":50,"stock":0, "category": "Atıştırmalık"}
        ];
        setProducts(fullList);
+       localStorage.setItem('asemm_product_version', PRODUCT_VERSION);
+       localStorage.setItem('asemm_products', JSON.stringify(fullList));
     }
 
     // Prices Migration: regular -> standart
