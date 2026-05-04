@@ -117,7 +117,9 @@ const Dashboard = ({ activeTab }) => {
     {"id":1776544812908,"name":"CİĞER POĞAÇA","price":100,"stock":0, "category": "Yemek"},
     {"id":1776547389874,"name":"PELUŞ OYUNCAK KÜÇÜK","price":100,"stock":0, "category": "Diğer"},
     {"id":1776547400805,"name":"PELUŞ OYUNCAK BÜYÜK","price":150,"stock":0, "category": "Diğer"},
-    {"id":1776547418358,"name":"PELUŞ OYUNCAK EN BÜYÜK BOY","price":400,"stock":0, "category": "Diğer"}
+    {"id":1776547418358,"name":"PELUŞ OYUNCAK EN BÜYÜK BOY","price":400,"stock":0, "category": "Diğer"},
+    {"id":1777899732000,"name":"CİĞ KÖFTE DÜRÜM","price":70,"stock":0, "category": "Yemek"},
+    {"id":1777899732001,"name":"CİĞ KÖFTE PORSİYON","price":100,"stock":0, "category": "Yemek"}
   ]));
 
   const [openingBalance, setOpeningBalance] = React.useState(() => getSaved('asemm_opening_balance', 0));
@@ -177,8 +179,8 @@ const Dashboard = ({ activeTab }) => {
     if (JSON.stringify(normalizedVips) !== JSON.stringify(vips)) setVips(normalizedVips);
 
     // Ürün Listesi Zorunlu Güncelleme: Eğer yeni ürünlerden biri listede yoksa zorla güncelle
-    const hasFullList = products.some(p => p.name === 'COCA COLA TENEKE');
-    if (!hasFullList) {
+    const hasCigKofte = products.some(p => p.name === 'CİĞ KÖFTE DÜRÜM');
+    if (!hasCigKofte) {
        console.log("[MIGRATION] Full product list not found, forcing update...");
        const fullList = [
         {"id":1,"name":"COCA COLA TENEKE","price":60,"stock":50, "category": "Soğuk İçecek"},
@@ -210,7 +212,9 @@ const Dashboard = ({ activeTab }) => {
         {"id":1776544812908,"name":"CİĞER POĞAÇA","price":100,"stock":0, "category": "Yemek"},
         {"id":1776547389874,"name":"PELUŞ OYUNCAK KÜÇÜK","price":100,"stock":0, "category": "Diğer"},
         {"id":1776547400805,"name":"PELUŞ OYUNCAK BÜYÜK","price":150,"stock":0, "category": "Diğer"},
-        {"id":1776547418358,"name":"PELUŞ OYUNCAK EN BÜYÜK BOY","price":400,"stock":0, "category": "Diğer"}
+        {"id":1776547418358,"name":"PELUŞ OYUNCAK EN BÜYÜK BOY","price":400,"stock":0, "category": "Diğer"},
+        {"id":1777899732000,"name":"CİĞ KÖFTE DÜRÜM","price":70,"stock":0, "category": "Yemek"},
+        {"id":1777899732001,"name":"CİĞ KÖFTE PORSİYON","price":100,"stock":0, "category": "Yemek"}
        ];
        setProducts(fullList);
     }
