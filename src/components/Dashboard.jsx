@@ -4,6 +4,7 @@ import Kantin from './Kantin';
 import Settings from './Settings';
 import Reports from './Reports';
 import AdminSettings from './AdminSettings';
+import Kasa from './Kasa';
 import './Dashboard.css';
 import { translations } from '../lib/i18n/translations';
 
@@ -209,6 +210,16 @@ const Dashboard = ({ activeTab }) => {
         {"id":1776547418358,"name":"PELUŞ OYUNCAK EN BÜYÜK BOY","price":400,"stock":0, "category": "Diğer"}
        ];
        setProducts(fullList);
+    }
+
+    // Prices Migration: regular -> standart
+    if (prices && prices.regular && !prices.standart) {
+       console.log("[MIGRATION] Migrating prices from regular to standart...");
+       setPrices(prev => ({
+         ...prev,
+         standart: prev.regular,
+         regular: undefined
+       }));
     }
 
     localStorage.setItem('asemm_tables', JSON.stringify(tables));

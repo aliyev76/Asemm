@@ -64,7 +64,7 @@ const MachineCard = ({ table, prices, onStart, onEnd, onCancel, onTransfer, onUp
   };
 
   const calculateCost = () => {
-    const hourlyRate = prices[table.type][table.controllers] || 120;
+    const hourlyRate = (prices?.[table.type]?.[table.controllers]) || 120;
     const effectiveMinutes = calculateEffectiveMinutes();
     const timeCost = (effectiveMinutes * hourlyRate) / 60;
     const productCost = table.products.reduce((sum, p) => sum + p.price, 0);
@@ -168,7 +168,7 @@ const MachineCard = ({ table, prices, onStart, onEnd, onCancel, onTransfer, onUp
               </button>
             ))}
           </div>
-          <p className="price-info">Saatlik: {prices[table.type][table.controllers]} TL</p>
+          <p className="price-info">Saatlik: {(prices?.[table.type]?.[table.controllers] || 0)} TL</p>
         </div>
 
         <div className="modal-section billing">
