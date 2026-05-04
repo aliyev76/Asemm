@@ -10,7 +10,8 @@ import { translations } from '../lib/i18n/translations';
 
 const INITIAL_PRICES = {
   standart: { 2: 120, 3: 180, 4: 240 },
-  vip: { 2: 150, 3: 210, 4: 270 } // VIP için 3 ve 4 kol ekledim (varsayılan artışla)
+  vip: { 2: 150, 3: 210, 4: 270 },
+  ps5: { 2: 175, 3: 235, 4: 295 } // PS5 Özel Fiyat
 };
 
 const MACHINE_GAMES = {
@@ -35,7 +36,7 @@ const INITIAL_TABLES = [
   ...Array.from({ length: 13 }, (_, i) => ({
     id: i + 1,
     name: `Masa ${i + 1}`,
-    type: 'standart',
+    type: i + 1 === 10 ? 'ps5' : 'standart',
     status: 'idle',
     startTime: null,
     controllers: 2,
@@ -167,6 +168,8 @@ const Dashboard = ({ activeTab }) => {
       if (t.name === 'Masa 6' && String(t.id) === 'v2') return { ...t, id: 6 };
       // Status - StartTime senkronizasyonu
       if (t.status === 'active' && !t.startTime) return { ...t, status: 'idle' };
+      // Masa 10 Migration: type -> ps5
+      if (t.id === 10 && t.type !== 'ps5') return { ...t, type: 'ps5' };
       return t;
     });
 
