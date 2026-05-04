@@ -15,6 +15,7 @@ const MachineCard = ({ table, prices, onStart, onEnd, onCancel, onTransfer, onUp
   const [cashAmount, setCashAmount] = useState(0);
   const [ibanAmount, setIbanAmount] = useState(0);
   const [debtAmount, setDebtAmount] = useState(0);
+  const [discountAmount, setDiscountAmount] = useState(0);
   const [debtorNote, setDebtorNote] = useState('');
 
   const formatHHMM = (dateObj) => {
@@ -85,6 +86,7 @@ const MachineCard = ({ table, prices, onStart, onEnd, onCancel, onTransfer, onUp
       nakit: parseFloat(cashAmount) || 0,
       iban: parseFloat(ibanAmount) || 0,
       debt: parseFloat(debtAmount) || 0,
+      discount: parseFloat(discountAmount) || 0,
       note: debtorNote,
       products: [...table.products],
       exactMinutes: calculateEffectiveMinutes()
@@ -106,10 +108,10 @@ const MachineCard = ({ table, prices, onStart, onEnd, onCancel, onTransfer, onUp
   useEffect(() => {
     if (showPaymentSelection) {
       const total = parseFloat(calculateCost());
-      const paid = (parseFloat(cashAmount) || 0) + (parseFloat(ibanAmount) || 0);
+      const paid = (parseFloat(cashAmount) || 0) + (parseFloat(ibanAmount) || 0) + (parseFloat(discountAmount) || 0);
       setDebtAmount(Math.max(0, total - paid).toFixed(2));
     }
-  }, [cashAmount, ibanAmount, showPaymentSelection, customStartTime, customEndTime]);
+  }, [cashAmount, ibanAmount, discountAmount, showPaymentSelection, customStartTime, customEndTime]);
 
   const handleEntryEditSave = () => {
     onUpdateStartTime(tempEntryTime);
@@ -246,7 +248,9 @@ const MachineCard = ({ table, prices, onStart, onEnd, onCancel, onTransfer, onUp
           <div className="active-actions-grid">
              <button className="action-btn end-session" onClick={triggerPaymentPhase}>Kapat & Ödeme Al</button>
              <div className="secondary-actions">
-                <button className="sec-btn danger" onClick={onCancel}>İptal Et</button>
+                <button className="sec-btn danger" onClick={() => {
+                  if (window.confirm('Masayı iptal etmek istediğinize emin misiniz?')) onCancel();
+                }}>İptal Et</button>
                 <div className="transfer-wrapper">
                   <button className="sec-btn info" onClick={() => setShowTransferMenu(!showTransferMenu)}>Aktar</button>
                   {showTransferMenu && (
@@ -284,6 +288,15 @@ const MachineCard = ({ table, prices, onStart, onEnd, onCancel, onTransfer, onUp
                       type="number" 
                       value={ibanAmount} 
                       onChange={e => setIbanAmount(e.target.value)}
+                      onClick={(e) => e.target.select()}
+                   />
+                </div>
+                <div className="pay-input-group discount">
+                   <label>🏷️ İndirim</label>
+                   <input 
+                      type="number" 
+                      value={discountAmount} 
+                      onChange={e => setDiscountAmount(e.target.value)}
                       onClick={(e) => e.target.select()}
                    />
                 </div>
