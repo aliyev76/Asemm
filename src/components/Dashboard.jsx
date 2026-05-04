@@ -152,25 +152,61 @@ const Dashboard = ({ activeTab }) => {
 
   // Auto-Save Effect & One-time Migration Fix
   React.useEffect(() => {
-    // Veri Tutarlılığı ve ID Normalizasyon Fix (Chrome vb. tarayıcılarda eski veri kalmış olabilir)
-    const normalizedTables = tables.map(t => {
-      if (t.name === 'Masa 6' && String(t.id) === 'v2') return { ...t, id: 6 };
-      return t;
-    });
     const normalizedVips = vips.map(v => {
       if (v.name === 'Loca' && String(v.id) === '6') return { ...v, id: 'v2' };
+      // Status - StartTime senkronizasyonu
+      if (v.status === 'active' && !v.startTime) return { ...v, status: 'idle' };
       return v;
+    });
+
+    const normalizedTables = tables.map(t => {
+      if (t.name === 'Masa 6' && String(t.id) === 'v2') return { ...t, id: 6 };
+      // Status - StartTime senkronizasyonu
+      if (t.status === 'active' && !t.startTime) return { ...t, status: 'idle' };
+      return t;
     });
 
     if (JSON.stringify(normalizedTables) !== JSON.stringify(tables)) setTables(normalizedTables);
     if (JSON.stringify(normalizedVips) !== JSON.stringify(vips)) setVips(normalizedVips);
 
-    // Eğer ürün listesi boş veya varsayılan 3 üründen ibaretse yeni listeyi bas
-    if (products.length <= 3 && products.some(p => p.name === 'COCA COLA TENEKE' || p.name === 'Kola')) {
-      const savedProducts = localStorage.getItem('asemm_products');
-      if (!savedProducts || JSON.parse(savedProducts).length <= 3) {
-         // Force update to the new 30 items list
-      }
+    // Ürün Listesi Güncelleme: Eğer eski 3 ürünlük liste varsa zorla yeni listeyi bas
+    const isOldProductList = products.length <= 3 && products.some(p => p.name === 'Kola' || p.name === 'Kola' || p.name === 'Tost');
+    if (isOldProductList) {
+       console.log("[MIGRATION] Old product list detected, updating to 30 items...");
+       const defaultProducts = [
+        {"id":1,"name":"COCA COLA TENEKE","price":60,"stock":50, "category": "Soğuk İçecek"},
+        {"id":2,"name":"TOST","price":60,"stock":20, "category": "Yemek"},
+        {"id":3,"name":"SU","price":10,"stock":100, "category": "Soğuk İçecek"},
+        {"id":1776542698600,"name":"KURUVASAN","price":50,"stock":0, "category": "Atıştırmalık"},
+        {"id":1776542770577,"name":"DÖNER YARIM","price":100,"stock":0, "category": "Yemek"},
+        {"id":1776542785476,"name":"ALMAN PASTASI","price":50,"stock":0, "category": "Atıştırmalık"},
+        {"id":1776542800421,"name":"CİĞER YARIM","price":100,"stock":0, "category": "Yemek"},
+        {"id":1776542811440,"name":"DÖNER TAM","price":150,"stock":0, "category": "Yemek"},
+        {"id":1776542826514,"name":"CİĞER TAM","price":150,"stock":0, "category": "Yemek"},
+        {"id":1776542916675,"name":"KEK","price":30,"stock":0, "category": "Atıştırmalık"},
+        {"id":1776542945319,"name":"COCA COLA 1 LİTRE","price":100,"stock":0, "category": "Soğuk İçecek"},
+        {"id":1776542989204,"name":"POĞAÇA","price":30,"stock":0, "category": "Yemek"},
+        {"id":1776543038711,"name":"HALLEY","price":50,"stock":0, "category": "Atıştırmalık"},
+        {"id":1776543049971,"name":"COCA STAR ÇİKOLATA","price":25,"stock":0, "category": "Atıştırmalık"},
+        {"id":1776543071673,"name":"COCO STAR ATIŞTIRMALIK","price":40,"stock":0, "category": "Atıştırmalık"},
+        {"id":1776543084100,"name":"ALBENİ ÇİKOLATA","price":30,"stock":0, "category": "Atıştırmalık"},
+        {"id":1776543093128,"name":"ALBENİ ATIŞTIRMALIK","price":50,"stock":0, "category": "Atıştırmalık"},
+        {"id":1776543107154,"name":"PİKO","price":20,"stock":0, "category": "Atıştırmalık"},
+        {"id":1776543129017,"name":"ÜLKER ÇİKOLATALI GOFRET","price":30,"stock":0, "category": "Atıştırmalık"},
+        {"id":1776543147512,"name":"PROBİS","price":50,"stock":0, "category": "Atıştırmalık"},
+        {"id":1776543271772,"name":"SAKLIKÖY","price":50,"stock":0, "category": "Atıştırmalık"},
+        {"id":1776543297137,"name":"ÜLKER NAPOLİTEN","price":60,"stock":0, "category": "Atıştırmalık"},
+        {"id":1776543319928,"name":"KARAM ÇİKOLATA","price":50,"stock":0, "category": "Atıştırmalık"},
+        {"id":1776543334153,"name":"ÜLKER GOLD GOFRET","price":30,"stock":0, "category": "Atıştırmalık"},
+        {"id":1776543339711,"name":"DORE","price":50,"stock":0, "category": "Atıştırmalık"},
+        {"id":1776543385180,"name":"TORKU ÇITIR GOFRET","price":20,"stock":0, "category": "Atıştırmalık"},
+        {"id":1776544812908,"name":"CİĞER POĞAÇA","price":100,"stock":0, "category": "Yemek"},
+        {"id":1776547389874,"name":"PELUŞ OYUNCAK KÜÇÜK","price":100,"stock":0, "category": "Diğer"},
+        {"id":1776547400805,"name":"PELUŞ OYUNCAK BÜYÜK","price":150,"stock":0, "category": "Diğer"},
+        {"id":1776547418358,"name":"PELUŞ OYUNCAK EN BÜYÜK BOY","price":400,"stock":0, "category": "Diğer"}
+      ];
+      setProducts(defaultProducts);
+      localStorage.setItem('asemm_products', JSON.stringify(defaultProducts));
     }
 
     // Prices migration (regular -> standart)

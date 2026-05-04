@@ -27,8 +27,8 @@ const Settings = ({ prices, setPrices }) => {
                   <label>{num} Kol (TL/Saat)</label>
                   <input 
                     type="number" 
-                    value={prices.regular[num]} 
-                    onChange={(e) => handlePriceChange('regular', num, e.target.value)}
+                    value={prices.standart ? prices.standart[num] : 0} 
+                    onChange={(e) => handlePriceChange('standart', num, e.target.value)}
                   />
                 </div>
               ))}
@@ -43,7 +43,7 @@ const Settings = ({ prices, setPrices }) => {
                   <label>{num} Kol (TL/Saat)</label>
                   <input 
                     type="number" 
-                    value={prices.vip[num]} 
+                    value={prices.vip ? prices.vip[num] : 0} 
                     onChange={(e) => handlePriceChange('vip', num, e.target.value)}
                   />
                 </div>
