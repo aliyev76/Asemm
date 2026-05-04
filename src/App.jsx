@@ -2,11 +2,25 @@ import React, { useState } from 'react'
 import './App.css'
 import Sidebar from './components/Sidebar'
 import Dashboard from './components/Dashboard'
+import Auth from './components/Auth'
 import { translations } from './lib/i18n/translations'
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
-  const t = translations.tr.sidebar; // Şimdilik varsayılan Türkçe
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return sessionStorage.getItem('asemm_auth') === 'true';
+  });
+
+  const t = translations.tr.sidebar; 
+
+  const handleLogin = () => {
+    setIsAuthenticated(true);
+    sessionStorage.setItem('asemm_auth', 'true');
+  };
+
+  if (!isAuthenticated) {
+    return <Auth onLogin={handleLogin} />;
+  }
 
   const getHeaderTitle = () => {
     if (activeTab === 'dashboard') return t.dashboard.toUpperCase();
