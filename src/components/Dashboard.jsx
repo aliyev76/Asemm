@@ -120,9 +120,9 @@ const Dashboard = ({ activeTab }) => {
     {"id":1776547418358,"name":"PELUŞ OYUNCAK EN BÜYÜK BOY","price":400,"stock":0, "category": "Diğer"},
     {"id":1777899732000,"name":"CİĞ KÖFTE DÜRÜM","price":70,"stock":0, "category": "Yemek"},
     {"id":1777899732001,"name":"CİĞ KÖFTE PORSİYON","price":100,"stock":0, "category": "Yemek"},
-    {"id":1777900000001,"name":"NESCAFE","price":30,"stock":0, "category": "Kahve"},
-    {"id":1777900000002,"name":"TÜRK KAHVESİ","price":40,"stock":0, "category": "Kahve"},
-    {"id":1777900000003,"name":"SÜTLÜ KAHVE","price":35,"stock":0, "category": "Kahve"}
+    {"id":1777900000001,"name":"KAHVE","price":40,"stock":0, "category": "Sıcak İçecek"},
+    {"id":1777900000002,"name":"ORALET","price":40,"stock":0, "category": "Sıcak İçecek"},
+    {"id":1777900000003,"name":"ÇAY","price":30,"stock":0, "category": "Sıcak İçecek"}
   ]));
 
   const [openingBalance, setOpeningBalance] = React.useState(() => getSaved('asemm_opening_balance', 0));
@@ -182,8 +182,8 @@ const Dashboard = ({ activeTab }) => {
     if (JSON.stringify(normalizedVips) !== JSON.stringify(vips)) setVips(normalizedVips);
 
     // Ürün Listesi Zorunlu Güncelleme: Eğer yeni ürünlerden biri listede yoksa zorla güncelle
-    const hasNescafe = products.some(p => p.name === 'NESCAFE');
-    if (!hasNescafe) {
+    const hasOralet = products.some(p => p.name === 'ORALET');
+    if (!hasOralet) {
        console.log("[MIGRATION] Full product list not found, forcing update...");
        const fullList = [
         {"id":1,"name":"COCA COLA TENEKE","price":60,"stock":50, "category": "Soğuk İçecek"},
@@ -218,9 +218,9 @@ const Dashboard = ({ activeTab }) => {
         {"id":1776547418358,"name":"PELUŞ OYUNCAK EN BÜYÜK BOY","price":400,"stock":0, "category": "Diğer"},
         {"id":1777899732000,"name":"CİĞ KÖFTE DÜRÜM","price":70,"stock":0, "category": "Yemek"},
         {"id":1777899732001,"name":"CİĞ KÖFTE PORSİYON","price":100,"stock":0, "category": "Yemek"},
-        {"id":1777900000001,"name":"NESCAFE","price":30,"stock":0, "category": "Kahve"},
-        {"id":1777900000002,"name":"TÜRK KAHVESİ","price":40,"stock":0, "category": "Kahve"},
-        {"id":1777900000003,"name":"SÜTLÜ KAHVE","price":35,"stock":0, "category": "Kahve"}
+        {"id":1777900000001,"name":"KAHVE","price":40,"stock":0, "category": "Sıcak İçecek"},
+        {"id":1777900000002,"name":"ORALET","price":40,"stock":0, "category": "Sıcak İçecek"},
+        {"id":1777900000003,"name":"ÇAY","price":30,"stock":0, "category": "Sıcak İçecek"}
        ];
        setProducts(fullList);
     }
