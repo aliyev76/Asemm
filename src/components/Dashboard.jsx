@@ -18,20 +18,20 @@ const MACHINE_GAMES = {
   3: ["Netflix"],
   4: ["Netflix"],
   5: ["PES 21", "PES 26", "FIFA 26", "Asphalt", "Mortal Kombat", "Netflix"],
-  6: ["PES 18", "PES 20", "PES 21", "PES 26", "FIFA 20", "FIFA 24", "FIFA 26", "Mortal Kombat", "Assassins Creed", "Netflix"],
-  7: ["PES 21", "PES 26", "FIFA 26", "Mortal Kombat", "Netflix"],
+  6: ["PES 18", "PES 21", "PES 26", "FIFA 24", "Netflix"], // Masa 6 (Eski v2)
+  7: ["PES 21", "PES 26", "FIFA 26", "Mortal Kombat", "NBA", "Netflix"], // Masa 7 (Eski 10'un cihazı)
   8: ["PES 18", "PES 21", "PES 26", "FIFA 26", "Netflix"],
   9: ["PES 26", "FIFA 24", "FIFA 25", "FIFA 26", "Asphalt", "Mortal Kombat", "Netflix"],
-  10: ["PES 21", "PES 26", "FIFA 26", "Mortal Kombat", "NBA", "Netflix"],
+  10: ["PS5", "PES 21", "PES 26", "FIFA 25", "FIFA 26", "NBA 2K25", "Mortal Kombat 1", "Netflix"], // Masa 10 (Yeni PS5)
   11: ["Netflix"],
   12: ["PES 18", "PES 21", "PES 26", "FIFA 25", "Mortal Kombat", "Netflix"],
   13: ["PES 21", "PES 26", "FIFA 24", "Netflix"],
-  'v1': ["Netflix"],
-  'v2': ["PES 18", "PES 21", "PES 26", "FIFA 24", "Netflix"]
+  'v1': ["PES 21", "PES 26", "FIFA 26", "Mortal Kombat", "Netflix"], // Sinema (Eski 7'nin cihazı)
+  'v2': ["PES 18", "PES 20", "PES 21", "PES 26", "FIFA 20", "FIFA 24", "FIFA 26", "Mortal Kombat", "Assassins Creed", "Netflix"] // Loca (Eski 6'nın cihazı)
 };
 
 const INITIAL_TABLES = [
-  ...Array.from({ length: 5 }, (_, i) => ({
+  ...Array.from({ length: 13 }, (_, i) => ({
     id: i + 1,
     name: `Masa ${i + 1}`,
     type: 'standart',
@@ -40,23 +40,12 @@ const INITIAL_TABLES = [
     controllers: 2,
     products: [],
     games: MACHINE_GAMES[i + 1] || []
-  })),
-  { id: 'v2', name: 'Masa 6', type: 'standart', status: 'idle', startTime: null, controllers: 2, products: [], games: MACHINE_GAMES[6] },
-  ...Array.from({ length: 7 }, (_, i) => ({
-    id: i + 7,
-    name: `Masa ${i + 7}`,
-    type: 'standart',
-    status: 'idle',
-    startTime: null,
-    controllers: 2,
-    products: [],
-    games: MACHINE_GAMES[i + 7] || []
   }))
 ];
 
 const INITIAL_VIP = [
   { id: 'v1', name: 'Sinema Odası', type: 'vip', status: 'idle', startTime: null, controllers: 2, products: [], games: MACHINE_GAMES['v1'] },
-  { id: 6, name: 'Loca', type: 'vip', status: 'idle', startTime: null, controllers: 2, products: [], games: MACHINE_GAMES['v2'] },
+  { id: 'v2', name: 'Loca', type: 'vip', status: 'idle', startTime: null, controllers: 2, products: [], games: MACHINE_GAMES['v2'] },
 ];
 
 const sortGames = (a, b) => {
@@ -131,20 +120,6 @@ const Dashboard = ({ activeTab }) => {
 
   // Auto-Save Effect & One-time Migration Fix
   React.useEffect(() => {
-    // Veri Tutarlılığı Kontrolü (Masa 6 / Loca Swap Fix if needed)
-    const fixMasa6 = (items) => items.map(t => {
-      // Type 'regular' -> 'standart' migration
-      let item = t;
-      if (item.type === 'regular') item = { ...item, type: 'standart' };
-
-      // Eğer Masa 6 boşsa veya oyunları eksikse INITIAL_...'daki güncel oyunları bas
-      if ((item.name === 'Masa 6' || item.id === 6 || item.id === 'v2') && (!item.games || item.games.length === 0)) {
-        const sourceId = item.name === 'Masa 6' ? 6 : (item.name === 'Loca' ? 'v2' : item.id);
-        return { ...item, games: MACHINE_GAMES[sourceId] || [] };
-      }
-      return item;
-    });
-
     // Prices migration (regular -> standart)
     if (prices.regular) {
       setPrices(prev => {
@@ -153,12 +128,6 @@ const Dashboard = ({ activeTab }) => {
         return newPrices;
       });
     }
-
-    const fixedTables = fixMasa6(tables);
-    const fixedVips = fixMasa6(vips);
-
-    if (JSON.stringify(fixedTables) !== JSON.stringify(tables)) setTables(fixedTables);
-    if (JSON.stringify(fixedVips) !== JSON.stringify(vips)) setVips(fixedVips);
 
     localStorage.setItem('asemm_tables', JSON.stringify(tables));
     localStorage.setItem('asemm_vips', JSON.stringify(vips));
@@ -229,16 +198,16 @@ const Dashboard = ({ activeTab }) => {
     setSelectedTableInfo(null);
   };
 
-  const handleTransferSession = (fromId, fromIsVip, toIdStr) => {
-    const isToVip = String(toIdStr).startsWith('v');
-    const toIdParsed = isToVip ? toIdStr : Number(toIdStr);
-
+  const handleTransferSession = (fromId, fromIsVip, toId) => {
     const fromTable = (fromIsVip ? vips : tables).find(t => t.id === fromId);
     if (!fromTable) return;
 
-    // Hedef masaya klonla
+    // Hedef masayı bul (VIP mi değil mi kontrol et)
+    const isToVip = vips.some(v => v.id === toId);
     const toSetter = isToVip ? setVips : setTables;
-    toSetter(prev => prev.map(t => t.id === toIdParsed ? {
+
+    // Hedef masaya klonla
+    toSetter(prev => prev.map(t => t.id === toId ? {
       ...t,
       status: 'active',
       startTime: fromTable.startTime,
@@ -254,14 +223,14 @@ const Dashboard = ({ activeTab }) => {
   };
 
   const handleUpdateTableGames = (id, games) => {
-    const isVip = String(id).startsWith('v');
+    const isVip = vips.some(v => String(v.id) === String(id));
     const setter = isVip ? setVips : setTables;
     setter(prev => prev.map(t => String(t.id) === String(id) ? { ...t, games } : t));
   };
 
   const handleSwapTables = (idA, idB) => {
-    const isVipA = String(idA).startsWith('v');
-    const isVipB = String(idB).startsWith('v');
+    const isVipA = vips.some(v => String(v.id) === String(idA));
+    const isVipB = vips.some(v => String(v.id) === String(idB));
 
     const tableA = [...vips, ...tables].find(t => String(t.id) === String(idA));
     const tableB = [...vips, ...tables].find(t => String(t.id) === String(idB));
