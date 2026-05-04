@@ -241,6 +241,15 @@ const Dashboard = ({ activeTab }) => {
        }));
     }
 
+    // PS5 Prices Migration
+    if (prices && !prices.ps5) {
+       console.log("[MIGRATION] Adding missing ps5 prices...");
+       setPrices(prev => ({
+         ...prev,
+         ps5: { 2: 175, 3: 235, 4: 295 }
+       }));
+    }
+
     localStorage.setItem('asemm_tables', JSON.stringify(tables));
     localStorage.setItem('asemm_vips', JSON.stringify(vips));
     localStorage.setItem('asemm_prices', JSON.stringify(prices));
