@@ -25,22 +25,33 @@ function createWindow() {
   } else {
     win.loadFile(path.join(__dirname, '../dist/index.html'));
   }
+  // Hata çözmek için konsolu otomatik açalım
+  win.webContents.openDevTools();
 }
 
-// Yedeklerin bulunacağı ana klasör (Belgelerim / Asemm_Yedekler)
-const backupDir = path.join(app.getPath('documents'), 'Asemm_Yedekler');
-const eodDir = path.join(backupDir, 'Gun_Sonlari');
+// Yedeklerin bulunacağı ana klasör değişkenleri
+let backupDir;
+let eodDir;
+let stateFile;
 
-// Klasörleri oluştur (eğer yoksa)
-if (!fs.existsSync(backupDir)) fs.mkdirSync(backupDir, { recursive: true });
-if (!fs.existsSync(eodDir)) fs.mkdirSync(eodDir, { recursive: true });
+function ensureDirectories() {
+  if (!backupDir) {
+    backupDir = path.join(app.getPath('documents'), 'Asemm_Yedekler');
+    eodDir = path.join(backupDir, 'Gun_Sonlari');
 
-// Aktif durum dosyası
-const stateFile = path.join(backupDir, 'asemm_data.json');
+    // Klasörleri oluştur (eğer yoksa)
+    if (!fs.existsSync(backupDir)) fs.mkdirSync(backupDir, { recursive: true });
+    if (!fs.existsSync(eodDir)) fs.mkdirSync(eodDir, { recursive: true });
+
+    // Aktif durum dosyası
+    stateFile = path.join(backupDir, 'asemm_data.json');
+  }
+}
 
 // IPC Handlers
 ipcMain.on('save-data', (event, key, data) => {
   try {
+    ensureDirectories();
     let currentState = {};
     if (fs.existsSync(stateFile)) {
       currentState = JSON.parse(fs.readFileSync(stateFile, 'utf8'));
@@ -56,6 +67,7 @@ ipcMain.on('save-data', (event, key, data) => {
 
 ipcMain.on('load-data', (event, key) => {
   try {
+    ensureDirectories();
     if (fs.existsSync(stateFile)) {
       const currentState = JSON.parse(fs.readFileSync(stateFile, 'utf8'));
       event.returnValue = currentState[key] !== undefined ? currentState[key] : null;
@@ -70,6 +82,7 @@ ipcMain.on('load-data', (event, key) => {
 
 ipcMain.on('save-end-of-day', (event, dateString, reportData) => {
   try {
+    ensureDirectories();
     // Windows dosya isimlerinde '/' veya ':' kullanılamaz
     const safeDate = dateString.replace(/[/:]/g, '-').replace(/ /g, '_');
     const filename = path.join(eodDir, `GunSonu_${safeDate}_${Date.now()}.json`);
@@ -82,6 +95,7 @@ ipcMain.on('save-end-of-day', (event, dateString, reportData) => {
 });
 
 app.whenReady().then(() => {
+  ensureDirectories();
   createWindow();
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
