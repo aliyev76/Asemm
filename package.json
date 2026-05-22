@@ -23,7 +23,7 @@
       "target": "nsis"
     },
     "files": [
-      "dist/**/*",
+      "dist-frontend/**/*",
       "electron/**/*",
       "package.json"
     ]
