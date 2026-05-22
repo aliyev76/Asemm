@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import logoImg from '../assets/logo.png';
 import './Auth.css';
 
 const Auth = ({ onLogin }) => {
@@ -21,7 +22,7 @@ const Auth = ({ onLogin }) => {
     <div className="auth-overlay">
       <div className={`auth-card ${error ? 'error' : ''}`}>
         <div className="auth-header">
-          <img src="/src/assets/logo.png" alt="Logo" />
+          <img src={logoImg} alt="Logo" />
           <h2>ASEMM LOGIN</h2>
           <p>Lütfen giriş şifresini giriniz</p>
         </div>

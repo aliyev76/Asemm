@@ -1,4 +1,5 @@
 import React from 'react';
+import logoImg from '../assets/logo.png';
 import './Sidebar.css';
 import { translations } from '../lib/i18n/translations';
 
@@ -20,7 +21,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
   return (
     <aside className="sidebar">
       <div className="sidebar-logo">
-        <img src="/src/assets/logo.png" alt="Logo" className="logo-img" />
+        <img src={logoImg} alt="Logo" className="logo-img" />
         <h2>ASEMM</h2>
       </div>
       
