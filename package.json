@@ -15,12 +15,18 @@
   "build": {
     "appId": "com.asemm.pscafe",
     "productName": "Asemm PS Cafe",
+    "directories": {
+      "output": "release",
+      "buildResources": "assets"
+    },
     "win": {
       "target": "nsis"
     },
-    "directories": {
-      "buildResources": "assets"
-    }
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "package.json"
+    ]
   },
   "dependencies": {
     "react": "^19.2.4",
