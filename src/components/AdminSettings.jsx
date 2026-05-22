@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './AdminSettings.css';
 
-const AdminSettings = ({ tables, vips, onUpdateTableGames, onSwapTables }) => {
+const AdminSettings = ({ tables, vips, onUpdateTableGames, onUpdateTableType, onSwapTables }) => {
   const allItems = [...vips, ...tables];
   const [selectedTableId, setSelectedTableId] = useState(allItems[0]?.id || '');
   const [newGameName, setNewGameName] = useState('');
@@ -49,6 +49,20 @@ const AdminSettings = ({ tables, vips, onUpdateTableGames, onSwapTables }) => {
               ))}
             </select>
           </div>
+
+          {selectedTable && (
+            <div className="admin-form-group" style={{marginTop: '15px'}}>
+              <label>Masa Türü (Fiyatlandırma için)</label>
+              <select 
+                value={selectedTable.type} 
+                onChange={(e) => onUpdateTableType && onUpdateTableType(selectedTable.id, e.target.value)}
+              >
+                <option value="standart">Standart Masa</option>
+                <option value="vip">VIP Oda</option>
+                <option value="ps5">PS5 Masa</option>
+              </select>
+            </div>
+          )}
 
           {selectedTable && (
             <div className="game-edit-section">

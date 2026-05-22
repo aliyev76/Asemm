@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './MachineCard.css';
 import { translations } from '../lib/i18n/translations';
 
-const MachineCard = ({ table, prices, onStart, onEnd, onCancel, onTransfer, onUpdateStartTime, availableIdleTables, onUpdateControllers, onAddProduct, onRemoveProduct, availableProducts }) => {
+const MachineCard = ({ table, prices, onStart, onEnd, onCancel, onTransfer, onUpdateStartTime, availableIdleTables, onUpdateControllers, onAddProduct, onRemoveProduct, onUpdateNote, availableProducts }) => {
   const t = translations.tr; // Genel çeviri nesnesi
   const [elapsedTime, setElapsedTime] = useState(0);
   const [showProductMenu, setShowProductMenu] = useState(false);
@@ -17,6 +17,7 @@ const MachineCard = ({ table, prices, onStart, onEnd, onCancel, onTransfer, onUp
   const [debtAmount, setDebtAmount] = useState(0);
   const [discountAmount, setDiscountAmount] = useState(0);
   const [debtorNote, setDebtorNote] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
 
   const formatHHMM = (dateObj) => {
     if (!dateObj) return '';
@@ -103,6 +104,7 @@ const MachineCard = ({ table, prices, onStart, onEnd, onCancel, onTransfer, onUp
     setDiscountAmount(0);
     setDebtAmount(0);
     setDebtorNote('');
+    setSearchTerm('');
     setShowPaymentSelection(true);
   };
 
@@ -123,7 +125,17 @@ const MachineCard = ({ table, prices, onStart, onEnd, onCancel, onTransfer, onUp
     <div className={`modal-content-inner ${table.type}`}>
       <div className="modal-header-info">
         <h2 className="modal-title">{table.name}</h2>
-        <span className={`type-badge ${table.type}`}>{t.dashboard[table.type]}</span>
+        <span className={`type-badge ${table.type}`}>{t.dashboard[table.type] || table.type.toUpperCase()}</span>
+      </div>
+
+      <div className="table-note-container" style={{ marginBottom: '15px', padding: '0 20px' }}>
+        <input 
+          type="text" 
+          placeholder="Masa Notu / Rezervasyon Ekle..." 
+          value={table.note || ''} 
+          onChange={(e) => onUpdateNote && onUpdateNote(e.target.value)}
+          style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', background: 'var(--bg-dark)', color: 'var(--text-light)', border: '1px solid var(--border)', fontSize: '0.9rem' }}
+        />
       </div>
 
       <div className="large-timer">
@@ -204,22 +216,34 @@ const MachineCard = ({ table, prices, onStart, onEnd, onCancel, onTransfer, onUp
             <div className="p-selector-pop">
                <div className="p-pop-header">
                  <span>Ürün Seçin</span>
-                 <button onClick={() => setShowProductMenu(false)}>✕</button>
+                 <button onClick={() => { setShowProductMenu(false); setSearchTerm(''); }}>✕</button>
+               </div>
+               <div className="p-search-container" style={{ padding: '10px' }}>
+                 <input 
+                   type="text" 
+                   placeholder="Hızlı arama (örn: kola, çay)..." 
+                   value={searchTerm}
+                   onChange={e => setSearchTerm(e.target.value)}
+                   autoFocus
+                   style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-light)', color: 'var(--text-light)' }}
+                 />
                </div>
                <div className="p-pop-content">
                 {Object.entries(
-                  (availableProducts || []).reduce((acc, p) => {
-                    const cat = p.category || 'Diğer';
-                    if (!acc[cat]) acc[cat] = [];
-                    acc[cat].push(p);
-                    return acc;
-                  }, {})
+                  (availableProducts || [])
+                    .filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()))
+                    .reduce((acc, p) => {
+                      const cat = p.category || 'Diğer';
+                      if (!acc[cat]) acc[cat] = [];
+                      acc[cat].push(p);
+                      return acc;
+                    }, {})
                 ).map(([cat, pList]) => (
                   <div key={cat} className="p-category-group">
                     <div className="p-group-title">{cat}</div>
                     <div className="p-options-grid">
                       {pList.map(p => (
-                        <button key={p.id} className="p-option" onClick={() => { onAddProduct(p); setShowProductMenu(false); }}>
+                        <button key={p.id} className="p-option" onClick={() => { onAddProduct(p); setShowProductMenu(false); setSearchTerm(''); }}>
                           <span className="p-name">{p.name}</span>
                           <span className="p-price">{p.price} TL</span>
                         </button>
@@ -227,7 +251,7 @@ const MachineCard = ({ table, prices, onStart, onEnd, onCancel, onTransfer, onUp
                     </div>
                   </div>
                 ))}
-                {(availableProducts || []).length === 0 && <p className="empty-msg">Ürün bulunamadı.</p>}
+                {(availableProducts || []).filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase())).length === 0 && <p className="empty-msg">Ürün bulunamadı.</p>}
                </div>
             </div>
           )}
@@ -271,6 +295,19 @@ const MachineCard = ({ table, prices, onStart, onEnd, onCancel, onTransfer, onUp
              <div className="split-header">
                 <h3>Ödeme Detayları</h3>
                 <span className="total-to-pay">Toplam: {calculateCost()} TL</span>
+             </div>
+             
+             <div className="quick-pay-buttons" style={{ display: 'flex', gap: '8px', marginBottom: '15px' }}>
+                <button className="sec-btn info" style={{flex: 1}} onClick={() => {
+                  setCashAmount(calculateCost()); setIbanAmount(0); setDiscountAmount(0);
+                }}>💵 Nakit</button>
+                <button className="sec-btn info" style={{flex: 1}} onClick={() => {
+                  setIbanAmount(calculateCost()); setCashAmount(0); setDiscountAmount(0);
+                }}>📱 IBAN</button>
+                <button className="sec-btn info" style={{flex: 1}} onClick={() => {
+                  const half = (calculateCost() / 2).toFixed(2);
+                  setCashAmount(half); setIbanAmount(half); setDiscountAmount(0);
+                }}>🌗 Yarı Yarıya</button>
              </div>
              
              <div className="split-inputs">

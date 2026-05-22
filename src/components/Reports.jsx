@@ -1,7 +1,8 @@
 import React from 'react';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import './Reports.css';
 
-const Reports = ({ logs, setLogs, history, onEndDay, openingBalance = 0, expenses = [] }) => {
+const Reports = ({ logs, setLogs, history, onEndDay, openingBalance = 0, expenses = [], debts = [], setDebts = null }) => {
   const [view, setView] = React.useState('live'); // 'live' or 'history'
   const [selectedDay, setSelectedDay] = React.useState(null);
   const [isConfirming, setIsConfirming] = React.useState(false);
@@ -35,6 +36,15 @@ const Reports = ({ logs, setLogs, history, onEndDay, openingBalance = 0, expense
   const handleEndDay = () => {
     onEndDay();
     setIsConfirming(false);
+  };
+
+  const handleUndoLog = (logId) => {
+    if (window.confirm("Bu işlemi silmek istediğinize emin misiniz? (Kasadan düşülecektir)")) {
+       setLogs(prev => prev.filter(l => l.id !== logId && l.timestamp !== logId)); // fallback for old logs without id
+       if (setDebts) {
+         setDebts(prev => prev.filter(d => d.logId !== logId));
+       }
+    }
   };
 
   return (
@@ -105,7 +115,7 @@ const Reports = ({ logs, setLogs, history, onEndDay, openingBalance = 0, expense
               <h3>🕒 Son İşlemler</h3>
               <div className="logs-list">
                 {logs.slice().reverse().map((log, idx) => (
-                  <div key={idx} className="log-item">
+                  <div key={idx} className="log-item" style={{position: 'relative'}}>
                     <div className="log-info">
                       <span className="log-table">{log.tableName}</span>
                       <span className="log-time">{new Date(log.timestamp).toLocaleTimeString()}</span>
@@ -117,7 +127,16 @@ const Reports = ({ logs, setLogs, history, onEndDay, openingBalance = 0, expense
                          {log.discount > 0 && <span className="m-tag s" style={{background: '#fbbf24', color: '#000'}}>İ:{log.discount}</span>}
                          {log.debt > 0 && <span className="m-tag d" title={log.note}>B:{log.debt}</span>}
                       </div>
-                      <span className="log-amount">{log.total.toFixed(2)} TL</span>
+                      <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
+                        <span className="log-amount">{log.total.toFixed(2)} TL</span>
+                        <button 
+                          onClick={() => handleUndoLog(log.id || log.timestamp)} 
+                          style={{background: 'transparent', border: 'none', color: 'var(--danger)', cursor: 'pointer', fontSize: '1.2rem'}}
+                          title="İşlemi Geri Al (Sil)"
+                        >
+                          🗑️
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -142,6 +161,19 @@ const Reports = ({ logs, setLogs, history, onEndDay, openingBalance = 0, expense
         </>
       ) : (
         <div className="history-sec">
+          {history.length > 0 && (
+            <div className="history-chart card" style={{ height: 250, marginBottom: 20, padding: 15 }}>
+              <h3 style={{ marginTop: 0, marginBottom: 15 }}>Ciro Grafiği (Son 14 Gün)</h3>
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={[...history].slice(0, 14).reverse()}>
+                  <XAxis dataKey="date" stroke="#9ca3af" fontSize={12} />
+                  <YAxis stroke="#9ca3af" fontSize={12} />
+                  <Tooltip cursor={{fill: '#374151'}} contentStyle={{backgroundColor: '#1f2937', borderColor: '#374151', color: '#fff'}} />
+                  <Bar dataKey="total" fill="#3b82f6" radius={[4, 4, 0, 0]} name="Ciro (TL)" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          )}
           <div className="history-list">
             <h3>📂 Arşivlenmiş Günler</h3>
             {history.length === 0 ? <p className="empty-msg">Henüz arşivlenmiş gün yok.</p> : (

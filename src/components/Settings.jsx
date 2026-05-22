@@ -50,6 +50,22 @@ const Settings = ({ prices, setPrices }) => {
               ))}
             </div>
           </div>
+
+          <div className="settings-section">
+            <h3>🕹️ PS5 Özel</h3>
+            <div className="input-grid">
+              {[2, 3, 4].map(num => (
+                <div key={num} className="price-input">
+                  <label>{num} Kol (TL/Saat)</label>
+                  <input 
+                    type="number" 
+                    value={prices.ps5 ? prices.ps5[num] : 0} 
+                    onChange={(e) => handlePriceChange('ps5', num, e.target.value)}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
         
         <div className="settings-footer">

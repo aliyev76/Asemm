@@ -13,6 +13,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
     { id: 'ayarlar', label: t.ayarlar, icon: '⚙️' },
     { id: 'yonetim', label: t.yonetim, icon: '🛠️' },
     { id: 'reports', label: t.reports, icon: '📈' },
+    { id: 'veresiye', label: 'Veresiye', icon: '📒' },
     { id: 'kasa', label: 'Kasa', icon: '💰' },
   ];
 

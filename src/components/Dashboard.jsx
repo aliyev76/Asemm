@@ -5,6 +5,7 @@ import Settings from './Settings';
 import Reports from './Reports';
 import AdminSettings from './AdminSettings';
 import Kasa from './Kasa';
+import Veresiye from './Veresiye';
 import './Dashboard.css';
 import { translations } from '../lib/i18n/translations';
 
@@ -64,7 +65,19 @@ const sortGames = (a, b) => {
 const Dashboard = ({ activeTab }) => {
   // Persistence Loading Helpers
   const getSaved = (key, fallback) => {
-    const saved = localStorage.getItem(key);
+    let saved = null;
+    
+    // 1. Önce Electron üzerinden diskten yüklemeyi dene
+    if (window.electronAPI) {
+      const diskData = window.electronAPI.loadData(key);
+      if (diskData) saved = JSON.stringify(diskData);
+    }
+    
+    // 2. Eğer diskte yoksa localStorage'a bak
+    if (!saved) {
+      saved = localStorage.getItem(key);
+    }
+    
     if (!saved) return fallback;
     try {
       const parsed = JSON.parse(saved);
@@ -90,6 +103,7 @@ const Dashboard = ({ activeTab }) => {
   const [products, setProducts] = React.useState(() => getSaved('asemm_products', []));
   const [openingBalance, setOpeningBalance] = React.useState(() => getSaved('asemm_opening_balance', 0));
   const [expenses, setExpenses] = React.useState(() => getSaved('asemm_expenses', []));
+  const [debts, setDebts] = React.useState(() => getSaved('asemm_debts', []));
 
   const [selectedTableInfo, setSelectedTableInfo] = React.useState(null); 
   const [selectedGame, setSelectedGame] = React.useState(null); 
@@ -205,7 +219,20 @@ const Dashboard = ({ activeTab }) => {
     localStorage.setItem('asemm_products', JSON.stringify(products));
     localStorage.setItem('asemm_opening_balance', JSON.stringify(openingBalance));
     localStorage.setItem('asemm_expenses', JSON.stringify(expenses));
-  }, [tables, vips, prices, logs, history, products, openingBalance, expenses]);
+    localStorage.setItem('asemm_debts', JSON.stringify(debts));
+    
+    if (window.electronAPI) {
+      window.electronAPI.saveData('asemm_tables', tables);
+      window.electronAPI.saveData('asemm_vips', vips);
+      window.electronAPI.saveData('asemm_prices', prices);
+      window.electronAPI.saveData('asemm_logs', logs);
+      window.electronAPI.saveData('asemm_history', history);
+      window.electronAPI.saveData('asemm_products', products);
+      window.electronAPI.saveData('asemm_opening_balance', openingBalance);
+      window.electronAPI.saveData('asemm_expenses', expenses);
+      window.electronAPI.saveData('asemm_debts', debts);
+    }
+  }, [tables, vips, prices, logs, history, products, openingBalance, expenses, debts]);
 
   const allGames = useMemo(() => {
     const games = new Set();
@@ -220,11 +247,25 @@ const Dashboard = ({ activeTab }) => {
 
   const handleEndSession = (id, isVip, paymentData) => {
     const currentTable = isVip ? vips.find(v => v.id === id) : tables.find(t => t.id === id);
+    const logId = Date.now();
+    
     setLogs(prev => [...prev, {
       ...paymentData,
+      id: logId,
       timestamp: new Date(),
       tableName: currentTable.name
     }]);
+
+    if (paymentData.debt > 0) {
+      setDebts(prev => [...prev, {
+        id: Date.now() + 1,
+        logId: logId,
+        tableName: currentTable.name,
+        name: paymentData.note || 'İsimsiz',
+        amount: parseFloat(paymentData.debt),
+        date: new Date().toLocaleDateString('tr-TR')
+      }]);
+    }
 
     const setter = isVip ? setVips : setTables;
     setter(prev => prev.map(t => t.id === id ? { ...t, status: 'idle', startTime: null, products: [] } : t));
@@ -281,6 +322,17 @@ const Dashboard = ({ activeTab }) => {
     const isVip = vips.some(v => String(v.id) === String(id));
     const setter = isVip ? setVips : setTables;
     setter(prev => prev.map(t => String(t.id) === String(id) ? { ...t, games } : t));
+  };
+
+  const handleUpdateTableType = (id, type) => {
+    const isVip = vips.some(v => String(v.id) === String(id));
+    const setter = isVip ? setVips : setTables;
+    setter(prev => prev.map(t => String(t.id) === String(id) ? { ...t, type } : t));
+  };
+
+  const handleUpdateNote = (id, isVip, note) => {
+    const setter = isVip ? setVips : setTables;
+    setter(prev => prev.map(t => String(t.id) === String(id) ? { ...t, note } : t));
   };
 
   const handleSwapTables = (idA, idB) => {
@@ -357,15 +409,21 @@ const Dashboard = ({ activeTab }) => {
     setLogs([]);
     setExpenses([]);
     setOpeningBalance(netCashInHand.toFixed(2));
+    
+    if (window.electronAPI) {
+      window.electronAPI.saveEndOfDay(daySummary.fullDate, daySummary);
+    }
+    
     alert("Gün sonu başarıyla alındı ve arşivlendi!");
   };
 
   const getActiveView = () => {
     if (activeTab === 'kantin') return <Kantin products={products} setProducts={setProducts} />;
     if (activeTab === 'ayarlar') return <Settings prices={prices} setPrices={setPrices} />;
-    if (activeTab === 'reports') return <Reports logs={logs} setLogs={setLogs} history={history} onEndDay={handleEndDay} openingBalance={openingBalance} expenses={expenses} />;
+    if (activeTab === 'reports') return <Reports logs={logs} setLogs={setLogs} history={history} onEndDay={handleEndDay} openingBalance={openingBalance} expenses={expenses} debts={debts} setDebts={setDebts} />;
     if (activeTab === 'kasa') return <Kasa logs={logs} openingBalance={openingBalance} setOpeningBalance={setOpeningBalance} expenses={expenses} setExpenses={setExpenses} />;
-    if (activeTab === 'yonetim') return <AdminSettings tables={tables} vips={vips} onUpdateTableGames={handleUpdateTableGames} onSwapTables={handleSwapTables} />;
+    if (activeTab === 'veresiye') return <Veresiye debts={debts} setDebts={setDebts} setLogs={setLogs} openingBalance={openingBalance} setOpeningBalance={setOpeningBalance} />;
+    if (activeTab === 'yonetim') return <AdminSettings tables={tables} vips={vips} onUpdateTableGames={handleUpdateTableGames} onUpdateTableType={handleUpdateTableType} onSwapTables={handleSwapTables} />;
     
     let displayItems = [];
     if (activeTab === 'dashboard') displayItems = [...vips, ...tables];
@@ -405,7 +463,13 @@ const Dashboard = ({ activeTab }) => {
         <div className="grid">
           {displayItems.map(item => (
             <div key={item.id} className={`simple-card ${item.status}`} onClick={() => setSelectedTableInfo({ id: item.id, isVip: item.type === 'vip' })}>
-              <div className="card-top"><span className="name">{item.name}</span><span className={`status-dot ${item.status}`}></span></div>
+              <div className="card-top">
+                 <span className="name">
+                   {item.name} 
+                   {item.note && <span className="note-icon" title={item.note}>📝</span>}
+                 </span>
+                 <span className={`status-dot ${item.status}`}></span>
+              </div>
               {item.games && item.games.length > 0 && (
                 <div className="card-games">
                   {item.games.slice(0, 3).map(g => <span key={g} className="game-tag">{g}</span>)}
@@ -446,6 +510,7 @@ const Dashboard = ({ activeTab }) => {
               onUpdateControllers={(count) => handleUpdateControllers(selectedTable.id, selectedTableInfo.isVip, count)}
               onAddProduct={(p) => handleAddProduct(selectedTable.id, p, selectedTableInfo.isVip)}
               onRemoveProduct={(idx) => handleRemoveProduct(selectedTable.id, idx, selectedTableInfo.isVip)}
+              onUpdateNote={(note) => handleUpdateNote(selectedTable.id, selectedTableInfo.isVip, note)}
               availableProducts={products}
             />
           </div>
