@@ -105,6 +105,10 @@ const Dashboard = ({ activeTab }) => {
   const [expenses, setExpenses] = React.useState(() => getSaved('asemm_expenses', []));
   const [debts, setDebts] = React.useState(() => getSaved('asemm_debts', []));
 
+  // Son kapatılan masayı geri almak (Undo) için eyaletler
+  const [lastClosedTable, setLastClosedTable] = React.useState(null);
+  const [showUndoToast, setShowUndoToast] = React.useState(false);
+
   const [selectedTableInfo, setSelectedTableInfo] = React.useState(null); 
   const [selectedGame, setSelectedGame] = React.useState(null); 
   const [selectedStatus, setSelectedStatus] = React.useState(null); 
@@ -247,7 +251,27 @@ const Dashboard = ({ activeTab }) => {
 
   const handleEndSession = (id, isVip, paymentData) => {
     const currentTable = isVip ? vips.find(v => v.id === id) : tables.find(t => t.id === id);
+    if (!currentTable) return;
     const logId = Date.now();
+    
+    // Geri almak için anlık görüntüyü (snapshot) kaydet
+    setLastClosedTable({
+      tableId: currentTable.id,
+      isVip: isVip,
+      name: currentTable.name,
+      type: currentTable.type,
+      startTime: currentTable.startTime,
+      products: [...currentTable.products],
+      controllers: currentTable.controllers,
+      note: currentTable.note || '',
+      logId: logId
+    });
+    setShowUndoToast(true);
+
+    // Otomatik olarak 15 saniye sonra "Geri Al" şeridini kapat
+    const timer = setTimeout(() => {
+      setShowUndoToast(false);
+    }, 15000);
     
     setLogs(prev => [...prev, {
       ...paymentData,
@@ -270,6 +294,31 @@ const Dashboard = ({ activeTab }) => {
     const setter = isVip ? setVips : setTables;
     setter(prev => prev.map(t => t.id === id ? { ...t, status: 'idle', startTime: null, products: [] } : t));
     setSelectedTableInfo(null);
+  };
+
+  const handleUndoLastClosedTable = () => {
+    if (!lastClosedTable) return;
+
+    // 1. Masayı eski durumuna geri döndür (aktif, eski süre, kollar, ürünler, notlar vb.)
+    const setter = lastClosedTable.isVip ? setVips : setTables;
+    setter(prev => prev.map(t => t.id === lastClosedTable.tableId ? {
+      ...t,
+      status: 'active',
+      startTime: lastClosedTable.startTime,
+      products: lastClosedTable.products,
+      controllers: lastClosedTable.controllers,
+      note: lastClosedTable.note
+    } : t));
+
+    // 2. Kasa logunu sil
+    setLogs(prev => prev.filter(log => log.id !== lastClosedTable.logId));
+
+    // 3. Veresiye borç kaydı varsa sil
+    setDebts(prev => prev.filter(debt => debt.logId !== lastClosedTable.logId));
+
+    // Durumları sıfırla
+    setLastClosedTable(null);
+    setShowUndoToast(false);
   };
 
   const handleUpdateControllers = (id, isVip, count) => {
@@ -495,6 +544,21 @@ const Dashboard = ({ activeTab }) => {
   return (
     <div className="dashboard-wrapper">
       {getActiveView()}
+      
+      {/* Şık ve modern "Geri Al" toast bildirimi */}
+      {showUndoToast && lastClosedTable && (
+        <div className="undo-toast-banner">
+          <div className="undo-toast-content">
+            <span className="undo-toast-icon">🔄</span>
+            <span className="undo-toast-text"><strong>{lastClosedTable.name}</strong> kapatıldı. Yanlışlıkla mı kapattınız?</span>
+          </div>
+          <div className="undo-toast-actions">
+            <button className="undo-toast-btn" onClick={handleUndoLastClosedTable}>Geri Al</button>
+            <button className="undo-toast-close" onClick={() => setShowUndoToast(false)}>✕</button>
+          </div>
+        </div>
+      )}
+
       {selectedTable && (
         <div className="modal-overlay" onClick={() => setSelectedTableInfo(null)}>
           <div className="modal-container" onClick={(e) => e.stopPropagation()}>

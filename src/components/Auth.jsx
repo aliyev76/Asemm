@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import logoImg from '../assets/logo.png';
 import './Auth.css';
 
@@ -6,10 +6,8 @@ const Auth = ({ onLogin }) => {
   const [pin, setPin] = useState('');
   const [error, setError] = useState(false);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Şimdilik basit bir şifre: 1453 veya istediğin bir şey
-    if (pin === '1453') {
+  const checkPinAndSubmit = (currentPin) => {
+    if (currentPin === '1453') {
       onLogin();
     } else {
       setError(true);
@@ -17,6 +15,41 @@ const Auth = ({ onLogin }) => {
       setTimeout(() => setError(false), 2000);
     }
   };
+
+  const handleSubmit = (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    checkPinAndSubmit(pin);
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Sayı tuşları (0-9)
+      if (/^[0-9]$/.test(e.key)) {
+        setPin(prev => {
+          if (prev.length < 4) return prev + e.key;
+          return prev;
+        });
+      }
+      // Silme tuşu (Backspace)
+      else if (e.key === 'Backspace') {
+        setPin(prev => prev.slice(0, -1));
+      }
+      // Onay tuşu (Enter)
+      else if (e.key === 'Enter') {
+        e.preventDefault();
+        checkPinAndSubmit(pin);
+      }
+      // Temizleme tuşu (Escape veya C)
+      else if (e.key === 'Escape' || e.key.toLowerCase() === 'c') {
+        setPin('');
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [pin]);
 
   return (
     <div className="auth-overlay">

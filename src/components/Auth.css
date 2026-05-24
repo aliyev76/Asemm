@@ -66,8 +66,13 @@
 
 .hidden-input {
   position: absolute;
+  width: 1px;
+  height: 1px;
   opacity: 0;
-  pointer-events: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
 }
 
 .keypad {

@@ -144,3 +144,95 @@
   border-radius: 4px;
   color: var(--text-muted);
 }
+
+/* Geri Al (Undo) Toast Bildirim Şeridi */
+.undo-toast-banner {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid var(--primary);
+  box-shadow: 0 10px 30px rgba(34, 211, 238, 0.2), 0 0 1px var(--primary);
+  backdrop-filter: blur(10px);
+  padding: 0.8rem 1.2rem;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  z-index: 9999;
+  animation: slideInRight 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.undo-toast-content {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.undo-toast-icon {
+  font-size: 1.2rem;
+  display: inline-block;
+  animation: rotateClockwise 2s linear infinite;
+}
+
+.undo-toast-text {
+  color: var(--text-light);
+  font-size: 0.9rem;
+}
+
+.undo-toast-text strong {
+  color: var(--primary);
+}
+
+.undo-toast-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.undo-toast-btn {
+  background: var(--primary);
+  color: var(--bg-color);
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.undo-toast-btn:hover {
+  background: #22d3ee;
+  transform: scale(1.05);
+}
+
+.undo-toast-close {
+  background: transparent;
+  color: var(--text-muted);
+  border: none;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.undo-toast-close:hover {
+  color: var(--danger);
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes rotateClockwise {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(-360deg); }
+}

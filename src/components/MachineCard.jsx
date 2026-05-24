@@ -70,12 +70,18 @@ const MachineCard = ({ table, prices, onStart, onEnd, onCancel, onTransfer, onUp
     const effectiveMinutes = calculateEffectiveMinutes();
     const timeCost = (effectiveMinutes * hourlyRate) / 60;
     const productCost = table.products.reduce((sum, p) => sum + p.price, 0);
-    return (timeCost + productCost).toFixed(2);
+    const total = timeCost + productCost;
+    // Bir önceki 5'liğe yuvarla (en az 0)
+    const rounded = Math.max(0, Math.floor(total / 5) * 5);
+    return rounded.toFixed(2);
   };
 
   const productCostOnly = table.products.reduce((sum, p) => sum + p.price, 0);
 
   const handleFinish = () => {
+    if (!window.confirm('Masayı kapatmak ve ödemeyi kaydetmek istediğinize emin misiniz?')) {
+      return;
+    }
     const total = calculateCost();
     const productsTotal = productCostOnly;
     const timeTotal = (total - productsTotal).toFixed(2);
@@ -191,7 +197,7 @@ const MachineCard = ({ table, prices, onStart, onEnd, onCancel, onTransfer, onUp
           <div className="billing-details">
             <div className="row">
               <span>Süre Bedeli:</span>
-              <span>{(calculateCost() - productCostOnly).toFixed(2)} TL</span>
+              <span>{Math.max(0, parseFloat(calculateCost()) - productCostOnly).toFixed(2)} TL</span>
             </div>
             <div className="row">
               <span>Ürünler:</span>
