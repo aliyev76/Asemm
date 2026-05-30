@@ -18,6 +18,8 @@ const MachineCard = ({ table, prices, onStart, onEnd, onCancel, onTransfer, onUp
   const [discountAmount, setDiscountAmount] = useState(0);
   const [debtorNote, setDebtorNote] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedProductForQty, setSelectedProductForQty] = useState(null);
+  const [qtyToAdd, setQtyToAdd] = useState(1);
 
   const formatHHMM = (dateObj) => {
     if (!dateObj) return '';
@@ -223,61 +225,80 @@ const MachineCard = ({ table, prices, onStart, onEnd, onCancel, onTransfer, onUp
               {showProductMenu && (
                 <div className="p-selector-pop">
                    <div className="p-pop-header">
-                     <span>Ürün Seçin</span>
-                     <button onClick={() => { setShowProductMenu(false); setSearchTerm(''); }}>✕</button>
+                     <span>{selectedProductForQty ? "Adet Belirleyin" : "Ürün Seçin"}</span>
+                     <button onClick={() => { setShowProductMenu(false); setSelectedProductForQty(null); setSearchTerm(''); }}>✕</button>
                    </div>
-                   <div className="p-search-container" style={{ padding: '10px' }}>
-                     <input 
-                       type="text" 
-                       placeholder="Hızlı arama (örn: kola, çay)..." 
-                       value={searchTerm}
-                       onChange={e => setSearchTerm(e.target.value)}
-                       autoFocus
-                       style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-light)', color: 'var(--text-light)' }}
-                     />
-                   </div>
-                   <div className="p-pop-content">
-                    {Object.entries(
-                      (availableProducts || [])
-                        .filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()))
-                        .reduce((acc, p) => {
-                          const cat = p.category || 'Diğer';
-                          if (!acc[cat]) acc[cat] = [];
-                          acc[cat].push(p);
-                          return acc;
-                        }, {})
-                    ).map(([cat, pList]) => (
-                      <div key={cat} className="p-category-group">
-                        <div className="p-group-title">{cat}</div>
-                        <div className="p-options-grid">
-                          {pList.map(p => (
-                            <button 
-                              key={p.id} 
-                              className="p-option" 
-                              onClick={() => { 
-                                const qtyStr = window.prompt(`${p.name} ürününden kaç adet eklemek istiyorsunuz?`, "1");
-                                if (qtyStr === null) return; // İptal tuşuna basıldı, hiçbir şey ekleme
-                                const qty = parseInt(qtyStr);
-                                if (isNaN(qty) || qty <= 0) {
-                                  alert("Lütfen geçerli bir adet sayısı girin.");
-                                  return;
-                                }
-                                for (let i = 0; i < qty; i++) {
-                                  onAddProduct(p);
-                                }
-                                setShowProductMenu(false);
-                                setSearchTerm('');
-                              }}
-                            >
-                              <span className="p-name">{p.name}</span>
-                              <span className="p-price">{p.price} TL</span>
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                    {(availableProducts || []).filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase())).length === 0 && <p className="empty-msg">Ürün bulunamadı.</p>}
-                   </div>
+                   
+                   {selectedProductForQty ? (
+                     <div className="qty-selector-card" style={{ padding: '1.2rem', display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center' }}>
+                       <h4 style={{ color: 'var(--primary)', fontWeight: '800', fontSize: '1.1rem', textAlign: 'center' }}>{selectedProductForQty.name}</h4>
+                       <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Masa hesabına kaç adet eklenecek?</p>
+                       
+                       <div className="qty-controls" style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', margin: '0.5rem 0' }}>
+                         <button type="button" className="c-btn" onClick={() => setQtyToAdd(prev => Math.max(1, prev - 1))} style={{ width: '42px', height: '42px', borderRadius: '50%', fontSize: '1.4rem', background: 'var(--border)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>-</button>
+                         <span style={{ fontSize: '2rem', fontWeight: '900', color: 'white', minWidth: '40px', textAlign: 'center' }}>{qtyToAdd}</span>
+                         <button type="button" className="c-btn" onClick={() => setQtyToAdd(prev => prev + 1)} style={{ width: '42px', height: '42px', borderRadius: '50%', fontSize: '1.4rem', background: 'var(--primary)', color: 'var(--bg-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>+</button>
+                       </div>
+                       
+                       <div className="qty-actions" style={{ display: 'flex', gap: '0.8rem', width: '100%', marginTop: '0.5rem' }}>
+                         <button type="button" className="action-btn start-session" onClick={() => {
+                           for (let i = 0; i < qtyToAdd; i++) {
+                             onAddProduct(selectedProductForQty);
+                           }
+                           setSelectedProductForQty(null);
+                           setShowProductMenu(false);
+                           setSearchTerm('');
+                         }} style={{ flex: 1, padding: '0.6rem', fontSize: '0.95rem' }}>Ekle</button>
+                         
+                         <button type="button" className="sec-btn danger" onClick={() => setSelectedProductForQty(null)} style={{ flex: 1, padding: '0.6rem', fontSize: '0.95rem' }}>Geri</button>
+                       </div>
+                     </div>
+                   ) : (
+                     <>
+                       <div className="p-search-container" style={{ padding: '10px' }}>
+                         <input 
+                           type="text" 
+                           placeholder="Hızlı arama (örn: kola, çay)..." 
+                           value={searchTerm}
+                           onChange={e => setSearchTerm(e.target.value)}
+                           autoFocus
+                           style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-light)', color: 'var(--text-light)' }}
+                         />
+                       </div>
+                       <div className="p-pop-content">
+                        {Object.entries(
+                          (availableProducts || [])
+                            .filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()))
+                            .reduce((acc, p) => {
+                              const cat = p.category || 'Diğer';
+                              if (!acc[cat]) acc[cat] = [];
+                              acc[cat].push(p);
+                              return acc;
+                            }, {})
+                        ).map(([cat, pList]) => (
+                          <div key={cat} className="p-category-group">
+                            <div className="p-group-title">{cat}</div>
+                            <div className="p-options-grid">
+                              {pList.map(p => (
+                                <button 
+                                  key={p.id} 
+                                  className="p-option" 
+                                  onClick={() => { 
+                                    setSelectedProductForQty(p);
+                                    setQtyToAdd(1);
+                                  }}
+                                >
+                                  <span className="p-name">{p.name}</span>
+                                  <span className="p-price">{p.price} TL</span>
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                        {(availableProducts || []).filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase())).length === 0 && <p className="empty-msg">Ürün bulunamadı.</p>}
+                       </div>
+                     </>
+                   )}
                 </div>
               )}
 

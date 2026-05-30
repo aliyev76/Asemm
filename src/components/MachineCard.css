@@ -150,18 +150,22 @@
 .end-session { background: var(--danger); color: white; border: none; }
 
 .p-selector-pop {
-    position: relative; /* absolute yerine relative yaparak modal içinde akışa soktuk ve clipping sorununu çözdük */
-    background: rgba(15, 23, 42, 0.65); /* Yarı şeffaf premium koyu arka plan */
-    border: 1px solid var(--primary);
-    border-radius: 12px;
+    position: fixed; /* absolute veya relative yerine fixed yaparak tamamen bağımsız ve ekranın ortasında açılır yaptık */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #0f172a; /* Mat koyu renk arka plan ile arkadaki içeriği maskeler */
+    border: 2.5px solid var(--primary); /* Parlayan net kenarlık */
+    border-radius: 20px;
     padding: 0;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    width: 100%; /* Kart genişliğini kaplasın */
-    max-height: 280px; /* Dikeyde sığması için kompakt limit */
-    margin-top: 0.8rem;
-    animation: slideIn 0.3s ease-out;
+    z-index: 9999; /* En üst katmanda görüntülenmesini sağlar */
+    box-shadow: 0 30px 100px rgba(0, 0, 0, 0.95), 0 0 15px rgba(34, 211, 238, 0.2);
+    width: 90%;
+    max-width: 360px;
+    max-height: 75vh; /* Dikeyde taşmayı önleyen esnek limit */
+    animation: bounceIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .p-pop-header {
