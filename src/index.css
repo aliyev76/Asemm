@@ -85,24 +85,25 @@ button:active {
   backdrop-filter: blur(8px);
   display: flex;
   justify-content: center;
-  align-items: flex-start; /* Dikeyde taşma olduğunda en üstten başlasın */
+  align-items: center; /* Kusursuz dikey ortalama */
   z-index: 1000;
   animation: fadeIn 0.3s ease;
-  overflow-y: auto; /* Bütün overlay dikeyde kaydırılabilsin */
-  padding: 20px 0; /* Üstten ve alttan güvenli dikey alan */
+  overflow: hidden; /* Overlay dikeyde taşma yapmaz, iç kutu kayar */
 }
 
 .modal-container {
   background: var(--sidebar-bg);
   width: 90%;
   max-width: 500px; /* Daha derli toplu genişlik */
+  max-height: 92vh; /* Ekran yüksekliğinin %92'sini aşamaz */
   border-radius: 20px;
   border: 1px solid var(--border);
-  padding: 1rem;
+  padding: 1.2rem;
   position: relative;
   box-shadow: 0 0 50px rgba(34, 211, 238, 0.1);
   animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  margin: auto 0; /* Ekrana sığıyorsa ortalar, sığmıyorsa en üste yaslayıp kaydırmayı açar */
+  display: flex;
+  flex-direction: column;
 }
 
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
