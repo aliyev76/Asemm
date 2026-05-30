@@ -1,24 +1,24 @@
 .modal-content-inner {
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
+  gap: 0.6rem;
 }
 
 .modal-header-info {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.8rem;
 }
 
 .modal-title {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 900;
 }
 
 .type-badge {
-  padding: 0.3rem 0.8rem;
+  padding: 0.2rem 0.6rem;
   border-radius: 20px;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 800;
 }
 
@@ -27,42 +27,42 @@
 
 .large-timer {
   font-family: 'Monaco', monospace;
-  font-size: 2.8rem;
+  font-size: 2.2rem;
   font-weight: 900;
   text-align: center;
   color: var(--text-main);
-  text-shadow: 0 0 20px rgba(34, 211, 238, 0.3);
+  text-shadow: 0 0 15px rgba(34, 211, 238, 0.3);
   background: rgba(255,255,255,0.03);
-  padding: 0.8rem;
-  border-radius: 12px;
+  padding: 0.5rem;
+  border-radius: 10px;
 }
 
 .modal-body-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+  gap: 0.6rem;
 }
 
 .modal-section h3 {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: var(--text-muted);
   text-transform: uppercase;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.3rem;
   letter-spacing: 1px;
 }
 
 .controller-selector {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.4rem;
 }
 
 .c-btn {
   flex: 1;
-  padding: 0.6rem;
+  padding: 0.4rem;
   background: var(--card-bg);
   border: 1px solid var(--border);
   color: var(--text-main);
-  font-size: 1rem;
+  font-size: 0.9rem;
 }
 
 .c-btn.selected {
@@ -74,24 +74,24 @@
 
 .billing-details {
   background: rgba(0,0,0,0.2);
-  padding: 0.8rem;
-  border-radius: 12px;
+  padding: 0.6rem;
+  border-radius: 10px;
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
+  gap: 0.2rem;
 }
 
 .row {
   display: flex;
   justify-content: space-between;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
 }
 
-.divider { border-bottom: 1px solid var(--border); margin: 0.3rem 0; }
+.divider { border-bottom: 1px solid var(--border); margin: 0.2rem 0; }
 
 .row.total {
   font-weight: 900;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   color: var(--accent);
 }
 
