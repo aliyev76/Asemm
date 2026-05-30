@@ -451,7 +451,8 @@ const Dashboard = ({ activeTab }) => {
       id: Date.now(), date: new Date().toLocaleDateString('tr-TR'), fullDate: new Date().toLocaleString('tr-TR'),
       total, nakit: nakitCount, iban: ibanCount, debt: debtCount, discount: discountCount,
       productsTotal, timeTotal, productStats, debtorLogs,
-      openingBalance: parseFloat(openingBalance) || 0, expenses: [...expenses], totalExpenses, netCashInHand, numTransactions: logs.length
+      openingBalance: parseFloat(openingBalance) || 0, expenses: [...expenses], totalExpenses, netCashInHand, numTransactions: logs.length,
+      originalLogs: [...logs] // Gün sonunu geri alabilmek için orijinal logları saklıyoruz
     };
 
     setHistory(prev => [daySummary, ...prev]);
@@ -466,10 +467,29 @@ const Dashboard = ({ activeTab }) => {
     alert("Gün sonu başarıyla alındı ve arşivlendi!");
   };
 
+  const handleUndoEndDay = (daySummary) => {
+    if (!daySummary) return;
+    if (window.confirm("Bu gün sonunu iptal etmek ve o günkü tüm ciro/gider verilerini canlı rapora geri yüklemek istediğinize emin misiniz?")) {
+      // 1. Logs verilerini geri yükle
+      setLogs(daySummary.originalLogs || []);
+      
+      // 2. Giderleri geri yükle
+      setExpenses(daySummary.expenses || []);
+      
+      // 3. Kasa açılış bakiyesini geri yükle
+      setOpeningBalance(daySummary.openingBalance.toFixed(2));
+      
+      // 4. Arşivden kaldır
+      setHistory(prev => prev.filter(h => h.id !== daySummary.id));
+      
+      alert("Gün sonu başarıyla iptal edildi ve tüm ciro/gider verileri canlı rapora geri yüklendi!");
+    }
+  };
+
   const getActiveView = () => {
     if (activeTab === 'kantin') return <Kantin products={products} setProducts={setProducts} />;
     if (activeTab === 'ayarlar') return <Settings prices={prices} setPrices={setPrices} />;
-    if (activeTab === 'reports') return <Reports logs={logs} setLogs={setLogs} history={history} onEndDay={handleEndDay} openingBalance={openingBalance} expenses={expenses} debts={debts} setDebts={setDebts} />;
+    if (activeTab === 'reports') return <Reports logs={logs} setLogs={setLogs} history={history} onEndDay={handleEndDay} onUndoEndDay={handleUndoEndDay} openingBalance={openingBalance} expenses={expenses} debts={debts} setDebts={setDebts} />;
     if (activeTab === 'kasa') return <Kasa logs={logs} openingBalance={openingBalance} setOpeningBalance={setOpeningBalance} expenses={expenses} setExpenses={setExpenses} />;
     if (activeTab === 'veresiye') return <Veresiye debts={debts} setDebts={setDebts} setLogs={setLogs} openingBalance={openingBalance} setOpeningBalance={setOpeningBalance} />;
     if (activeTab === 'yonetim') return <AdminSettings tables={tables} vips={vips} onUpdateTableGames={handleUpdateTableGames} onUpdateTableType={handleUpdateTableType} onSwapTables={handleSwapTables} />;

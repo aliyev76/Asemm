@@ -2,7 +2,7 @@ import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import './Reports.css';
 
-const Reports = ({ logs, setLogs, history, onEndDay, openingBalance = 0, expenses = [], debts = [], setDebts = null }) => {
+const Reports = ({ logs, setLogs, history, onEndDay, onUndoEndDay, openingBalance = 0, expenses = [], debts = [], setDebts = null }) => {
   const [view, setView] = React.useState('live'); // 'live' or 'history'
   const [selectedDay, setSelectedDay] = React.useState(null);
   const [isConfirming, setIsConfirming] = React.useState(false);
@@ -196,9 +196,23 @@ const Reports = ({ logs, setLogs, history, onEndDay, openingBalance = 0, expense
 
           {selectedDay && (
             <div className="history-details card">
-              <div className="detail-header">
+              <div className="detail-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
                 <h3>📊 {selectedDay.date} Detayları</h3>
-                <button className="close-details" onClick={() => setSelectedDay(null)}>×</button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  {onUndoEndDay && (
+                    <button 
+                      className="sec-btn danger" 
+                      onClick={() => {
+                        onUndoEndDay(selectedDay);
+                        setSelectedDay(null);
+                      }}
+                      style={{ padding: '6px 12px', fontSize: '0.8rem', background: 'rgba(239, 68, 68, 0.1)', color: 'var(--danger)', border: '1px solid rgba(239, 68, 68, 0.2)' }}
+                    >
+                      🔄 Gün Sonunu İptal Et (Geri Yükle)
+                    </button>
+                  )}
+                  <button className="close-details" onClick={() => setSelectedDay(null)}>×</button>
+                </div>
               </div>
               <div className="summary-pills">
                 <div className="pill"><span>Nakit:</span> {selectedDay.nakit.toFixed(2)} TL</div>
