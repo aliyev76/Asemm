@@ -251,7 +251,24 @@ const MachineCard = ({ table, prices, onStart, onEnd, onCancel, onTransfer, onUp
                         <div className="p-group-title">{cat}</div>
                         <div className="p-options-grid">
                           {pList.map(p => (
-                            <button key={p.id} className="p-option" onClick={() => { onAddProduct(p); setShowProductMenu(false); setSearchTerm(''); }}>
+                            <button 
+                              key={p.id} 
+                              className="p-option" 
+                              onClick={() => { 
+                                const qtyStr = window.prompt(`${p.name} ürününden kaç adet eklemek istiyorsunuz?`, "1");
+                                if (qtyStr === null) return; // İptal tuşuna basıldı, hiçbir şey ekleme
+                                const qty = parseInt(qtyStr);
+                                if (isNaN(qty) || qty <= 0) {
+                                  alert("Lütfen geçerli bir adet sayısı girin.");
+                                  return;
+                                }
+                                for (let i = 0; i < qty; i++) {
+                                  onAddProduct(p);
+                                }
+                                setShowProductMenu(false);
+                                setSearchTerm('');
+                              }}
+                            >
                               <span className="p-name">{p.name}</span>
                               <span className="p-price">{p.price} TL</span>
                             </button>
