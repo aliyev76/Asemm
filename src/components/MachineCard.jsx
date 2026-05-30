@@ -105,7 +105,7 @@ const MachineCard = ({ table, prices, onStart, onEnd, onCancel, onTransfer, onUp
     const total = calculateCost();
     setCustomStartTime(formatHHMM(new Date(table.startTime)));
     setCustomEndTime(formatHHMM(new Date()));
-    setCashAmount(total); // Varsayılan nakit
+    setCashAmount(parseFloat(total)); // Varsayılan nakit
     setIbanAmount(0);
     setDiscountAmount(0);
     setDebtAmount(0);
@@ -134,143 +134,147 @@ const MachineCard = ({ table, prices, onStart, onEnd, onCancel, onTransfer, onUp
         <span className={`type-badge ${table.type}`}>{t.dashboard[table.type] || table.type.toUpperCase()}</span>
       </div>
 
-      <div className="table-note-container" style={{ marginBottom: '15px', padding: '0 20px' }}>
-        <input 
-          type="text" 
-          placeholder="Masa Notu / Rezervasyon Ekle..." 
-          value={table.note || ''} 
-          onChange={(e) => onUpdateNote && onUpdateNote(e.target.value)}
-          style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', background: 'var(--bg-dark)', color: 'var(--text-light)', border: '1px solid var(--border)', fontSize: '0.9rem' }}
-        />
-      </div>
+      {!showPaymentSelection && (
+        <>
+          <div className="table-note-container" style={{ marginBottom: '15px', padding: '0 20px' }}>
+            <input 
+              type="text" 
+              placeholder="Masa Notu / Rezervasyon Ekle..." 
+              value={table.note || ''} 
+              onChange={(e) => onUpdateNote && onUpdateNote(e.target.value)}
+              style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', background: 'var(--bg-dark)', color: 'var(--text-light)', border: '1px solid var(--border)', fontSize: '0.9rem' }}
+            />
+          </div>
 
-      <div className="large-timer">
-        {!showPaymentSelection ? (
-           <div className="active-timer-content">
-             {formatTime(elapsedTime)}
-             {!isEditingEntry ? (
-               <button className="edit-entry-btn" onClick={() => { 
-                 setTempEntryTime(formatHHMM(new Date(table.startTime)));
-                 setIsEditingEntry(true); 
-               }}>🕒 Düzenle</button>
-             ) : (
-               <div className="entry-edit-box">
-                 <input type="time" value={tempEntryTime} onChange={e => setTempEntryTime(e.target.value)} />
-                 <button className="save-entry-btn" onClick={handleEntryEditSave}>Set</button>
-                 <button className="cancel-entry-btn" onClick={() => setIsEditingEntry(false)}>×</button>
+          <div className="large-timer">
+            {!showPaymentSelection ? (
+               <div className="active-timer-content">
+                 {formatTime(elapsedTime)}
+                 {!isEditingEntry ? (
+                   <button className="edit-entry-btn" onClick={() => { 
+                     setTempEntryTime(formatHHMM(new Date(table.startTime)));
+                     setIsEditingEntry(true); 
+                   }}>🕒 Düzenle</button>
+                 ) : (
+                   <div className="entry-edit-box">
+                     <input type="time" value={tempEntryTime} onChange={e => setTempEntryTime(e.target.value)} />
+                     <button className="save-entry-btn" onClick={handleEntryEditSave}>Set</button>
+                     <button className="cancel-entry-btn" onClick={() => setIsEditingEntry(false)}>×</button>
+                   </div>
+                 )}
                </div>
-             )}
-           </div>
-        ) : (
-          <div className="manual-time-inputs">
-             <div className="time-col">
-               <label>Giriş</label>
-               <input type="time" value={customStartTime} onChange={e => setCustomStartTime(e.target.value)} />
-             </div>
-             <div className="time-col">
-               <label>Çıkış</label>
-               <input type="time" value={customEndTime} onChange={e => setCustomEndTime(e.target.value)} />
-             </div>
+            ) : (
+              <div className="manual-time-inputs">
+                 <div className="time-col">
+                   <label>Giriş</label>
+                   <input type="time" value={customStartTime} onChange={e => setCustomStartTime(e.target.value)} />
+                 </div>
+                 <div className="time-col">
+                   <label>Çıkış</label>
+                   <input type="time" value={customEndTime} onChange={e => setCustomEndTime(e.target.value)} />
+                 </div>
+              </div>
+            )}
           </div>
-        )}
-      </div>
 
-      <div className="modal-body-grid">
-        <div className="modal-section controllers">
-          <h3>🎮 Oyun Kolu Sayısı</h3>
-          <div className="controller-selector">
-            {[2, 3, 4].map(num => (
-              <button 
-                key={num} 
-                className={`c-btn ${table.controllers === num ? 'selected' : ''}`}
-                onClick={() => onUpdateControllers(num)}
-              >
-                {num}
-              </button>
-            ))}
-          </div>
-          <p className="price-info">Saatlik: {(prices?.[table.type]?.[table.controllers] || 0)} TL</p>
-        </div>
+          <div className="modal-body-grid">
+            <div className="modal-section controllers">
+              <h3>🎮 Oyun Kolu Sayısı</h3>
+              <div className="controller-selector">
+                {[2, 3, 4].map(num => (
+                  <button 
+                    key={num} 
+                    className={`c-btn ${table.controllers === num ? 'selected' : ''}`}
+                    onClick={() => onUpdateControllers(num)}
+                  >
+                    {num}
+                  </button>
+                ))}
+              </div>
+              <p className="price-info">Saatlik: {(prices?.[table.type]?.[table.controllers] || 0)} TL</p>
+            </div>
 
-        <div className="modal-section billing">
-          <h3>💰 Ücret Bilgisi</h3>
-          <div className="billing-details">
-            <div className="row">
-              <span>Süre Bedeli:</span>
-              <span>{Math.max(0, parseFloat(calculateCost()) - productCostOnly).toFixed(2)} TL</span>
-            </div>
-            <div className="row">
-              <span>Ürünler:</span>
-              <span>{productCostOnly} TL</span>
-            </div>
-            <div className="divider"></div>
-            <div className="row total">
-              <span>TOPLAM:</span>
-              <span>{calculateCost()} TL</span>
+            <div className="modal-section billing">
+              <h3>💰 Ücret Bilgisi</h3>
+              <div className="billing-details">
+                <div className="row">
+                  <span>Süre Bedeli:</span>
+                  <span>{Math.max(0, parseFloat(calculateCost()) - productCostOnly).toFixed(2)} TL</span>
+                </div>
+                <div className="row">
+                  <span>Ürünler:</span>
+                  <span>{productCostOnly} TL</span>
+                </div>
+                <div className="divider"></div>
+                <div className="row total">
+                  <span>TOPLAM:</span>
+                  <span>{calculateCost()} TL</span>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      <div className="modal-section products">
-          <div className="section-header">
-            <h3>🍟 Ekstra Ürünler</h3>
-            <button className="add-btn-main" onClick={() => setShowProductMenu(!showProductMenu)}>Ürün Ekle +</button>
-          </div>
-          
-          {showProductMenu && (
-            <div className="p-selector-pop">
-               <div className="p-pop-header">
-                 <span>Ürün Seçin</span>
-                 <button onClick={() => { setShowProductMenu(false); setSearchTerm(''); }}>✕</button>
-               </div>
-               <div className="p-search-container" style={{ padding: '10px' }}>
-                 <input 
-                   type="text" 
-                   placeholder="Hızlı arama (örn: kola, çay)..." 
-                   value={searchTerm}
-                   onChange={e => setSearchTerm(e.target.value)}
-                   autoFocus
-                   style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-light)', color: 'var(--text-light)' }}
-                 />
-               </div>
-               <div className="p-pop-content">
-                {Object.entries(
-                  (availableProducts || [])
-                    .filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()))
-                    .reduce((acc, p) => {
-                      const cat = p.category || 'Diğer';
-                      if (!acc[cat]) acc[cat] = [];
-                      acc[cat].push(p);
-                      return acc;
-                    }, {})
-                ).map(([cat, pList]) => (
-                  <div key={cat} className="p-category-group">
-                    <div className="p-group-title">{cat}</div>
-                    <div className="p-options-grid">
-                      {pList.map(p => (
-                        <button key={p.id} className="p-option" onClick={() => { onAddProduct(p); setShowProductMenu(false); setSearchTerm(''); }}>
-                          <span className="p-name">{p.name}</span>
-                          <span className="p-price">{p.price} TL</span>
-                        </button>
-                      ))}
-                    </div>
+          <div className="modal-section products">
+              <div className="section-header">
+                <h3>🍟 Ekstra Ürünler</h3>
+                <button className="add-btn-main" onClick={() => setShowProductMenu(!showProductMenu)}>Ürün Ekle +</button>
+              </div>
+              
+              {showProductMenu && (
+                <div className="p-selector-pop">
+                   <div className="p-pop-header">
+                     <span>Ürün Seçin</span>
+                     <button onClick={() => { setShowProductMenu(false); setSearchTerm(''); }}>✕</button>
+                   </div>
+                   <div className="p-search-container" style={{ padding: '10px' }}>
+                     <input 
+                       type="text" 
+                       placeholder="Hızlı arama (örn: kola, çay)..." 
+                       value={searchTerm}
+                       onChange={e => setSearchTerm(e.target.value)}
+                       autoFocus
+                       style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid var(--border)', background: 'var(--bg-light)', color: 'var(--text-light)' }}
+                     />
+                   </div>
+                   <div className="p-pop-content">
+                    {Object.entries(
+                      (availableProducts || [])
+                        .filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()))
+                        .reduce((acc, p) => {
+                          const cat = p.category || 'Diğer';
+                          if (!acc[cat]) acc[cat] = [];
+                          acc[cat].push(p);
+                          return acc;
+                        }, {})
+                    ).map(([cat, pList]) => (
+                      <div key={cat} className="p-category-group">
+                        <div className="p-group-title">{cat}</div>
+                        <div className="p-options-grid">
+                          {pList.map(p => (
+                            <button key={p.id} className="p-option" onClick={() => { onAddProduct(p); setShowProductMenu(false); setSearchTerm(''); }}>
+                              <span className="p-name">{p.name}</span>
+                              <span className="p-price">{p.price} TL</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                    {(availableProducts || []).filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase())).length === 0 && <p className="empty-msg">Ürün bulunamadı.</p>}
+                   </div>
+                </div>
+              )}
+
+              <div className="p-list-mini">
+                {table.products.map((p, idx) => (
+                  <div key={idx} className="p-tag">
+                    <span>{p.name} - {p.price} TL</span>
+                    <button className="remove-p-btn" onClick={() => onRemoveProduct(idx)}>✕</button>
                   </div>
                 ))}
-                {(availableProducts || []).filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase())).length === 0 && <p className="empty-msg">Ürün bulunamadı.</p>}
-               </div>
-            </div>
-          )}
-
-          <div className="p-list-mini">
-            {table.products.map((p, idx) => (
-              <div key={idx} className="p-tag">
-                <span>{p.name} - {p.price} TL</span>
-                <button className="remove-p-btn" onClick={() => onRemoveProduct(idx)}>✕</button>
               </div>
-            ))}
           </div>
-      </div>
+        </>
+      )}
 
       <div className="modal-actions">
         {table.status === 'idle' ? (
@@ -301,17 +305,20 @@ const MachineCard = ({ table, prices, onStart, onEnd, onCancel, onTransfer, onUp
              <div className="split-header">
                 <h3>Ödeme Detayları</h3>
                 <span className="total-to-pay">Toplam: {calculateCost()} TL</span>
+                <span className="total-breakdown" style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                  (Süre: {Math.max(0, parseFloat(calculateCost()) - productCostOnly).toFixed(2)} TL + Ürünler: {productCostOnly} TL)
+                </span>
              </div>
              
              <div className="quick-pay-buttons" style={{ display: 'flex', gap: '8px', marginBottom: '15px' }}>
                 <button className="sec-btn info" style={{flex: 1}} onClick={() => {
-                  setCashAmount(calculateCost()); setIbanAmount(0); setDiscountAmount(0);
+                  setCashAmount(parseFloat(calculateCost())); setIbanAmount(0); setDiscountAmount(0);
                 }}>💵 Nakit</button>
                 <button className="sec-btn info" style={{flex: 1}} onClick={() => {
-                  setIbanAmount(calculateCost()); setCashAmount(0); setDiscountAmount(0);
+                  setIbanAmount(parseFloat(calculateCost())); setCashAmount(0); setDiscountAmount(0);
                 }}>📱 IBAN</button>
                 <button className="sec-btn info" style={{flex: 1}} onClick={() => {
-                  const half = (calculateCost() / 2).toFixed(2);
+                  const half = parseFloat((parseFloat(calculateCost()) / 2).toFixed(2));
                   setCashAmount(half); setIbanAmount(half); setDiscountAmount(0);
                 }}>🌗 Yarı Yarıya</button>
              </div>
@@ -321,6 +328,7 @@ const MachineCard = ({ table, prices, onStart, onEnd, onCancel, onTransfer, onUp
                    <label>💵 Nakit Alınan</label>
                    <input 
                       type="number" 
+                      step="any"
                       value={cashAmount} 
                       onChange={e => setCashAmount(e.target.value)}
                       onClick={(e) => e.target.select()}
@@ -330,6 +338,7 @@ const MachineCard = ({ table, prices, onStart, onEnd, onCancel, onTransfer, onUp
                    <label>📱 IBAN Alınan</label>
                    <input 
                       type="number" 
+                      step="any"
                       value={ibanAmount} 
                       onChange={e => setIbanAmount(e.target.value)}
                       onClick={(e) => e.target.select()}
@@ -339,6 +348,7 @@ const MachineCard = ({ table, prices, onStart, onEnd, onCancel, onTransfer, onUp
                    <label>🏷️ İndirim</label>
                    <input 
                       type="number" 
+                      step="any"
                       value={discountAmount} 
                       onChange={e => setDiscountAmount(e.target.value)}
                       onClick={(e) => e.target.select()}
