@@ -183,3 +183,32 @@
   color: var(--primary);
   border: 1px solid rgba(34, 211, 238, 0.2);
 }
+
+/* Kantin Header & Save Button styles */
+.kantin-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1.5rem;
+}
+
+.save-all-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 1.5rem;
+  background: var(--primary);
+  color: var(--bg-color);
+  font-weight: 700;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(34, 211, 238, 0.3);
+  border: 1px solid var(--primary);
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.save-all-btn:hover {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(34, 211, 238, 0.5);
+}

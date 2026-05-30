@@ -72,6 +72,11 @@ const Kantin = ({ products, setProducts }) => {
 
   return (
     <div className="kantin-container">
+      <div className="kantin-header">
+        <button className="save-all-btn" onClick={() => alert("Kantin ürünleri kaydedildi! 🍟")}>
+           💾 {t.save_all}
+        </button>
+      </div>
       <div className="grid">
         <div className="card kantin-form">
           <h3>📦 {t.add_product}</h3>
@@ -189,11 +194,6 @@ const Kantin = ({ products, setProducts }) => {
         </div>
       </div>
 
-      <div className="kantin-footer">
-        <button className="main-btn save-all-btn" onClick={() => alert("Kantin ürünleri kaydedildi! 🍟")}>
-           💾 {t.save_all}
-        </button>
-      </div>
     </div>
   );
 };
