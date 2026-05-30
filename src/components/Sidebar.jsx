@@ -3,7 +3,7 @@ import logoImg from '../assets/logo.png';
 import './Sidebar.css';
 import { translations } from '../lib/i18n/translations';
 
-const Sidebar = ({ activeTab, setActiveTab }) => {
+const Sidebar = ({ activeTab, setActiveTab, onLock }) => {
   const t = translations.tr.sidebar; // Şimdilik varsayılan Türkçe
 
   const menuItems = [
@@ -43,6 +43,9 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
           <div className="dot online"></div>
           <span>{t.system_active}</span>
         </div>
+        <button className="lock-sidebar-btn" onClick={onLock}>
+          🔒 Sistemi Kilitle
+        </button>
       </div>
     </aside>
   );

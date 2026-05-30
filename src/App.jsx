@@ -18,6 +18,11 @@ function App() {
     sessionStorage.setItem('asemm_auth', 'true');
   };
 
+  const handleLock = () => {
+    setIsAuthenticated(false);
+    sessionStorage.removeItem('asemm_auth');
+  };
+
   if (!isAuthenticated) {
     return <Auth onLogin={handleLogin} />;
   }
@@ -29,7 +34,7 @@ function App() {
 
   return (
     <div className="app-wrapper">
-      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} onLock={handleLock} />
       <main className="main-content">
         <header className="content-header">
           <h1>{getHeaderTitle()}</h1>

@@ -99,6 +99,7 @@ const Veresiye = ({ debts, setDebts, setLogs, openingBalance, setOpeningBalance 
               <div className="v-actions">
                 <input 
                   type="number" 
+                  step="any"
                   placeholder="Ödenen Tutar" 
                   defaultValue={debt.amount}
                   onChange={e => setPayAmount(prev => ({ ...prev, [debt.id]: e.target.value }))}

@@ -94,6 +94,7 @@ const Kantin = ({ products, setProducts }) => {
               <label>{t.price}</label>
               <input 
                 type="number" 
+                step="any"
                 value={newProduct.price} 
                 onChange={(e) => setNewProduct({...newProduct, price: e.target.value})}
                 placeholder="0.00"
@@ -168,8 +169,8 @@ const Kantin = ({ products, setProducts }) => {
                           {CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                         </select>
                       </td>
-                      <td><input className="edit-input small" type="number" value={editedProduct.price} onChange={e => setEditedProduct({...editedProduct, price: parseFloat(e.target.value)})} /></td>
-                      <td><input className="edit-input small" type="number" value={editedProduct.stock} onChange={e => setEditedProduct({...editedProduct, stock: parseInt(e.target.value)})} /></td>
+                      <td><input className="edit-input small" type="number" step="any" value={editedProduct.price} onChange={e => setEditedProduct({...editedProduct, price: parseFloat(e.target.value)})} /></td>
+                      <td><input className="edit-input small" type="number" step="any" value={editedProduct.stock} onChange={e => setEditedProduct({...editedProduct, stock: parseInt(e.target.value)})} /></td>
                       <td>
                         <button className="save-btn" onClick={handleSaveEdit}>✅</button>
                         <button className="cancel-btn" onClick={() => setEditId(null)}>❌</button>

@@ -68,7 +68,7 @@ const Auth = ({ onLogin }) => {
           <input 
             type="password" 
             value={pin}
-            onChange={(e) => setPin(e.target.value)}
+            readOnly
             maxLength={4}
             autoFocus
             className="hidden-input"

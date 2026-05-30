@@ -43,6 +43,7 @@ const Kasa = ({ logs, openingBalance, setOpeningBalance, expenses, setExpenses }
           <div className="input-with-symbol">
             <input 
               type="number" 
+              step="any"
               value={openingBalance} 
               onChange={(e) => setOpeningBalance(e.target.value)}
               placeholder="0.00"
@@ -84,6 +85,7 @@ const Kasa = ({ logs, openingBalance, setOpeningBalance, expenses, setExpenses }
               <label>Tutar (TL)</label>
               <input 
                 type="number" 
+                step="any"
                 value={newExpense.amount}
                 onChange={(e) => setNewExpense({...newExpense, amount: e.target.value})}
                 placeholder="0.00"

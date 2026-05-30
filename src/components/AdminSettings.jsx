@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import './AdminSettings.css';
 
 const AdminSettings = ({ tables, vips, onUpdateTableGames, onUpdateTableType, onSwapTables }) => {
@@ -11,6 +11,16 @@ const AdminSettings = ({ tables, vips, onUpdateTableGames, onUpdateTableType, on
 
   // Use string comparison because select values are always strings
   const selectedTable = allItems.find(t => String(t.id) === String(selectedTableId));
+
+  const allExistingGames = useMemo(() => {
+    const games = new Set();
+    allItems.forEach(item => {
+      if (item.games) {
+        item.games.forEach(g => games.add(g));
+      }
+    });
+    return Array.from(games).sort();
+  }, [allItems]);
 
   const handleAddGame = () => {
     if (!newGameName.trim()) return;
@@ -87,6 +97,31 @@ const AdminSettings = ({ tables, vips, onUpdateTableGames, onUpdateTableType, on
                   onKeyPress={(e) => e.key === 'Enter' && handleAddGame()}
                 />
                 <button className="add-btn" onClick={handleAddGame}>Ekle</button>
+              </div>
+
+              <div className="existing-games-selector">
+                <h4>Var Olan Oyunlardan Hızlı Ekle:</h4>
+                <div className="existing-game-chips">
+                  {allExistingGames
+                    .filter(g => !selectedTable.games?.includes(g))
+                    .map(g => (
+                      <button 
+                        key={g} 
+                        type="button"
+                        className="existing-game-chip" 
+                        onClick={() => {
+                          const updatedGames = [...(selectedTable.games || []), g];
+                          onUpdateTableGames(selectedTableId, updatedGames);
+                        }}
+                      >
+                        + {g}
+                      </button>
+                    ))
+                  }
+                  {allExistingGames.filter(g => !selectedTable.games?.includes(g)).length === 0 && (
+                    <span className="no-existing-hint">Mevcut tüm oyunlar bu masaya eklenmiş durumda.</span>
+                  )}
+                </div>
               </div>
             </div>
           )}
