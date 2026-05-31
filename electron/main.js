@@ -25,8 +25,8 @@ function createWindow() {
   } else {
     win.loadFile(path.join(__dirname, '../dist-frontend/index.html'));
   }
-  // Hata çözmek için konsolu otomatik açalım
-  win.webContents.openDevTools();
+  // Hata çözmek için konsolu otomatik açalım (İstek üzerine kapatıldı)
+  // win.webContents.openDevTools();
 }
 
 // Yedeklerin bulunacağı ana klasör değişkenleri

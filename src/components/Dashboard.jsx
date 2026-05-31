@@ -244,9 +244,9 @@ const Dashboard = ({ activeTab }) => {
     return Array.from(games).sort(sortGames);
   }, []);
 
-  const handleStartSession = (id, isVip) => {
+  const handleStartSession = (id, isVip, gameName) => {
     const setter = isVip ? setVips : setTables;
-    setter(prev => prev.map(t => t.id === id ? { ...t, status: 'active', startTime: new Date() } : t));
+    setter(prev => prev.map(t => t.id === id ? { ...t, status: 'active', startTime: new Date(), activeGame: gameName || 'Standart' } : t));
   };
 
   const handleEndSession = (id, isVip, paymentData) => {
@@ -264,7 +264,8 @@ const Dashboard = ({ activeTab }) => {
       products: [...currentTable.products],
       controllers: currentTable.controllers,
       note: currentTable.note || '',
-      logId: logId
+      logId: logId,
+      activeGame: currentTable.activeGame // Save active game
     });
     setShowUndoToast(true);
 
@@ -292,7 +293,7 @@ const Dashboard = ({ activeTab }) => {
     }
 
     const setter = isVip ? setVips : setTables;
-    setter(prev => prev.map(t => t.id === id ? { ...t, status: 'idle', startTime: null, products: [] } : t));
+    setter(prev => prev.map(t => t.id === id ? { ...t, status: 'idle', startTime: null, products: [], activeGame: null } : t));
     setSelectedTableInfo(null);
   };
 
@@ -307,7 +308,8 @@ const Dashboard = ({ activeTab }) => {
       startTime: lastClosedTable.startTime,
       products: lastClosedTable.products,
       controllers: lastClosedTable.controllers,
-      note: lastClosedTable.note
+      note: lastClosedTable.note,
+      activeGame: lastClosedTable.activeGame // Restore active game
     } : t));
 
     // 2. Kasa logunu sil
@@ -350,7 +352,7 @@ const Dashboard = ({ activeTab }) => {
 
   const handleCancelSession = (id, isVip) => {
     const setter = isVip ? setVips : setTables;
-    setter(prev => prev.map(t => t.id === id ? { ...t, status: 'idle', startTime: null, products: [] } : t));
+    setter(prev => prev.map(t => t.id === id ? { ...t, status: 'idle', startTime: null, products: [], activeGame: null } : t));
     setSelectedTableInfo(null);
   };
 
@@ -360,10 +362,10 @@ const Dashboard = ({ activeTab }) => {
     const isToVip = vips.some(v => v.id === toId);
     const toSetter = isToVip ? setVips : setTables;
     toSetter(prev => prev.map(t => t.id === toId ? {
-      ...t, status: 'active', startTime: fromTable.startTime, products: fromTable.products, controllers: fromTable.controllers
+      ...t, status: 'active', startTime: fromTable.startTime, products: fromTable.products, controllers: fromTable.controllers, activeGame: fromTable.activeGame
     } : t));
     const fromSetter = fromIsVip ? setVips : setTables;
-    fromSetter(prev => prev.map(t => t.id === fromId ? { ...t, status: 'idle', startTime: null, products: [] } : t));
+    fromSetter(prev => prev.map(t => t.id === fromId ? { ...t, status: 'idle', startTime: null, products: [], activeGame: null } : t));
     setSelectedTableInfo(null);
   };
 
@@ -545,7 +547,7 @@ const Dashboard = ({ activeTab }) => {
                   {item.games.length > 3 && <span className="game-tag">+{item.games.length - 3}</span>}
                 </div>
               )}
-              <div className="card-bottom"><span>{t[item.type]}</span>{item.status === 'active' ? <span className="active-timer">{t.status_active.toUpperCase()}</span> : <span style={{color: 'var(--success)'}}>{t.status_idle.toUpperCase()}</span>}</div>
+              <div className="card-bottom"><span>{t[item.type]}</span>{item.status === 'active' ? <span className="active-timer">{item.activeGame ? `🎮 ${item.activeGame}` : t.status_active.toUpperCase()}</span> : <span style={{color: 'var(--success)'}}>{t.status_idle.toUpperCase()}</span>}</div>
             </div>
           ))}
         </div>
@@ -585,7 +587,7 @@ const Dashboard = ({ activeTab }) => {
             <button className="close-modal" onClick={() => setSelectedTableInfo(null)}>✕</button>
             <MachineCard 
               key={selectedTable.id} table={selectedTable} prices={prices}
-              onStart={() => handleStartSession(selectedTable.id, selectedTableInfo.isVip)}
+              onStart={(gameName) => handleStartSession(selectedTable.id, selectedTableInfo.isVip, gameName)}
               onEnd={(paymentData) => handleEndSession(selectedTable.id, selectedTableInfo.isVip, paymentData)}
               onCancel={() => handleCancelSession(selectedTable.id, selectedTableInfo.isVip)}
               onTransfer={(toId) => handleTransferSession(selectedTable.id, selectedTableInfo.isVip, toId)}

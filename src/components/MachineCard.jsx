@@ -127,6 +127,10 @@ const MachineCard = ({ table, prices, onStart, onEnd, onCancel, onTransfer, onUp
   const handleEntryEditSave = () => {
     onUpdateStartTime(tempEntryTime);
     setIsEditingEntry(false);
+    // Reclaim window focus to resolve Windows native time picker focus trap
+    setTimeout(() => {
+      window.focus();
+    }, 50);
   };
 
   return (
@@ -134,6 +138,9 @@ const MachineCard = ({ table, prices, onStart, onEnd, onCancel, onTransfer, onUp
       <div className="modal-header-info">
         <h2 className="modal-title">{table.name}</h2>
         <span className={`type-badge ${table.type}`}>{t.dashboard[table.type] || table.type.toUpperCase()}</span>
+        {table.status === 'active' && table.activeGame && (
+          <span className="type-badge vip" style={{ background: 'var(--accent)', color: 'var(--bg-color)' }}>🎮 {table.activeGame}</span>
+        )}
       </div>
 
       {!showPaymentSelection && (
@@ -159,9 +166,9 @@ const MachineCard = ({ table, prices, onStart, onEnd, onCancel, onTransfer, onUp
                    }}>🕒 Düzenle</button>
                  ) : (
                    <div className="entry-edit-box">
-                     <input type="time" value={tempEntryTime} onChange={e => setTempEntryTime(e.target.value)} />
+                     <input type="time" value={tempEntryTime} onChange={e => { setTempEntryTime(e.target.value); setTimeout(() => window.focus(), 50); }} onBlur={() => window.focus()} />
                      <button className="save-entry-btn" onClick={handleEntryEditSave}>Set</button>
-                     <button className="cancel-entry-btn" onClick={() => setIsEditingEntry(false)}>×</button>
+                     <button className="cancel-entry-btn" onClick={() => { setIsEditingEntry(false); setTimeout(() => window.focus(), 50); }}>×</button>
                    </div>
                  )}
                </div>
@@ -169,11 +176,11 @@ const MachineCard = ({ table, prices, onStart, onEnd, onCancel, onTransfer, onUp
               <div className="manual-time-inputs">
                  <div className="time-col">
                    <label>Giriş</label>
-                   <input type="time" value={customStartTime} onChange={e => setCustomStartTime(e.target.value)} />
+                   <input type="time" value={customStartTime} onChange={e => { setCustomStartTime(e.target.value); setTimeout(() => window.focus(), 50); }} onBlur={() => window.focus()} />
                  </div>
                  <div className="time-col">
                    <label>Çıkış</label>
-                   <input type="time" value={customEndTime} onChange={e => setCustomEndTime(e.target.value)} />
+                   <input type="time" value={customEndTime} onChange={e => { setCustomEndTime(e.target.value); setTimeout(() => window.focus(), 50); }} onBlur={() => window.focus()} />
                  </div>
               </div>
             )}
@@ -316,7 +323,36 @@ const MachineCard = ({ table, prices, onStart, onEnd, onCancel, onTransfer, onUp
 
       <div className="modal-actions">
         {table.status === 'idle' ? (
-          <button className="action-btn start-session" onClick={onStart}>Masayı Başlat</button>
+          <div className="start-session-box" style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', width: '100%' }}>
+            <h3 style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.2rem', textAlign: 'center' }}>🎮 Başlangıç Oyunu Seçin</h3>
+            {table.games && table.games.length > 0 ? (
+              <div className="start-game-options" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.6rem', maxHeight: '150px', overflowY: 'auto', paddingRight: '4px', background: 'rgba(0,0,0,0.1)', padding: '0.6rem', borderRadius: '10px', border: '1px solid var(--border)' }}>
+                {table.games.map(game => (
+                  <button 
+                    key={game} 
+                    type="button" 
+                    className="sec-btn info" 
+                    onClick={() => {
+                      onStart(game);
+                      // Force active focus back to the window
+                      setTimeout(() => window.focus(), 100);
+                    }}
+                    style={{ padding: '0.6rem', fontSize: '0.8rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%', margin: 0 }}
+                  >
+                    {game}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontStyle: 'italic', textAlign: 'center' }}>Bu masaya henüz oyun atanmamış.</p>
+            )}
+            <button className="action-btn start-session" onClick={() => {
+              onStart('Standart');
+              setTimeout(() => window.focus(), 100);
+            }} style={{ marginTop: '0.4rem' }}>
+              🎮 Standart Başlat (Oyunsuz)
+            </button>
+          </div>
         ) : !showPaymentSelection ? (
           <div className="active-actions-grid">
              <button className="action-btn end-session" onClick={triggerPaymentPhase}>Kapat & Ödeme Al</button>
