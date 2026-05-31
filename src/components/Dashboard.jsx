@@ -293,7 +293,7 @@ const Dashboard = ({ activeTab }) => {
     }
 
     const setter = isVip ? setVips : setTables;
-    setter(prev => prev.map(t => t.id === id ? { ...t, status: 'idle', startTime: null, products: [], activeGame: null } : t));
+    setter(prev => prev.map(t => t.id === id ? { ...t, status: 'idle', startTime: null, products: [], activeGame: null, controllers: 2 } : t));
     setSelectedTableInfo(null);
   };
 
@@ -352,7 +352,7 @@ const Dashboard = ({ activeTab }) => {
 
   const handleCancelSession = (id, isVip) => {
     const setter = isVip ? setVips : setTables;
-    setter(prev => prev.map(t => t.id === id ? { ...t, status: 'idle', startTime: null, products: [], activeGame: null } : t));
+    setter(prev => prev.map(t => t.id === id ? { ...t, status: 'idle', startTime: null, products: [], activeGame: null, controllers: 2 } : t));
     setSelectedTableInfo(null);
   };
 
@@ -365,7 +365,7 @@ const Dashboard = ({ activeTab }) => {
       ...t, status: 'active', startTime: fromTable.startTime, products: fromTable.products, controllers: fromTable.controllers, activeGame: fromTable.activeGame
     } : t));
     const fromSetter = fromIsVip ? setVips : setTables;
-    fromSetter(prev => prev.map(t => t.id === fromId ? { ...t, status: 'idle', startTime: null, products: [], activeGame: null } : t));
+    fromSetter(prev => prev.map(t => t.id === fromId ? { ...t, status: 'idle', startTime: null, products: [], activeGame: null, controllers: 2 } : t));
     setSelectedTableInfo(null);
   };
 
