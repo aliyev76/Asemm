@@ -26,6 +26,16 @@ const MachineCard = ({ table, prices, onStart, onEnd, onCancel, onTransfer, onUp
     return dateObj.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
   };
 
+  const handleTimeFormat = (val, setter) => {
+    let raw = val.replace(/[^\d]/g, '');
+    if (raw.length > 4) raw = raw.slice(0, 4);
+    if (raw.length > 2) {
+      setter(raw.slice(0, 2) + ':' + raw.slice(2));
+    } else {
+      setter(raw);
+    }
+  };
+
   const [customStartTime, setCustomStartTime] = useState('');
   const [customEndTime, setCustomEndTime] = useState('');
 
@@ -127,10 +137,6 @@ const MachineCard = ({ table, prices, onStart, onEnd, onCancel, onTransfer, onUp
   const handleEntryEditSave = () => {
     onUpdateStartTime(tempEntryTime);
     setIsEditingEntry(false);
-    // Reclaim window focus to resolve Windows native time picker focus trap
-    setTimeout(() => {
-      window.focus();
-    }, 50);
   };
 
   return (
@@ -166,9 +172,9 @@ const MachineCard = ({ table, prices, onStart, onEnd, onCancel, onTransfer, onUp
                    }}>🕒 Düzenle</button>
                  ) : (
                    <div className="entry-edit-box">
-                     <input type="time" value={tempEntryTime} onChange={e => { setTempEntryTime(e.target.value); setTimeout(() => window.focus(), 50); }} onBlur={() => window.focus()} />
+                     <input type="text" maxLength={5} placeholder="SS:DD" value={tempEntryTime} onChange={e => handleTimeFormat(e.target.value, setTempEntryTime)} />
                      <button className="save-entry-btn" onClick={handleEntryEditSave}>Set</button>
-                     <button className="cancel-entry-btn" onClick={() => { setIsEditingEntry(false); setTimeout(() => window.focus(), 50); }}>×</button>
+                     <button className="cancel-entry-btn" onClick={() => setIsEditingEntry(false)}>×</button>
                    </div>
                  )}
                </div>
@@ -176,11 +182,11 @@ const MachineCard = ({ table, prices, onStart, onEnd, onCancel, onTransfer, onUp
               <div className="manual-time-inputs">
                  <div className="time-col">
                    <label>Giriş</label>
-                   <input type="time" value={customStartTime} onChange={e => { setCustomStartTime(e.target.value); setTimeout(() => window.focus(), 50); }} onBlur={() => window.focus()} />
+                   <input type="text" maxLength={5} placeholder="SS:DD" value={customStartTime} onChange={e => handleTimeFormat(e.target.value, setCustomStartTime)} />
                  </div>
                  <div className="time-col">
                    <label>Çıkış</label>
-                   <input type="time" value={customEndTime} onChange={e => { setCustomEndTime(e.target.value); setTimeout(() => window.focus(), 50); }} onBlur={() => window.focus()} />
+                   <input type="text" maxLength={5} placeholder="SS:DD" value={customEndTime} onChange={e => handleTimeFormat(e.target.value, setCustomEndTime)} />
                  </div>
               </div>
             )}
